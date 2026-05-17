@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
-const session = require("express-session");
+const cookieSession = require("cookie-session");
 
 const app = express();
 
@@ -18,10 +18,10 @@ mongoose.connect(MONGODB_URI)
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 
-app.use(session({
-    secret: "secretkey",
-    resave: false,
-    saveUninitialized: true
+app.use(cookieSession({
+    name: 'session',
+    keys: ['secretkey'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
 // View Engine
