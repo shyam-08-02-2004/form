@@ -195,13 +195,18 @@
       document.getElementById('form-' + tab).classList.add('active');
     }
 
-    // Auto-switch to signup if ref code is present
-    const refCode = '<%= ref %>';
-    if (refCode && refCode.trim() !== '') {
-      switchTab('signup');
-    } else {
-      switchTab('login');
-    }
+    // Use Client-Side parsing for ref to bypass Vercel caching
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref');
+      
+      if (refCode && refCode.trim() !== '') {
+        document.getElementById('refCodeInput').value = refCode;
+        switchTab('signup');
+      } else {
+        switchTab('login');
+      }
+    });
   </script>
 
 </body>
