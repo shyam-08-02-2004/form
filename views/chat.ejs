@@ -572,12 +572,13 @@
           var isSent = false;
           if (isAdmin && msg.sender === 'admin') isSent = true;
           if (!isAdmin && msg.sender === 'user') isSent = true;
+          var canAct = isSent || isAdmin;
         %>
         <div class="msg-row <%= isSent ? 'sent' : 'received' %>" style="animation-delay: <%= i * 0.05 %>s" data-id="<%= msg.id %>">
           <div class="msg-avatar">
             <% if (msg.sender === 'admin') { %>🛡️<% } else { %>👤<% } %>
           </div>
-          <div class="msg-bubble" <%= isSent ? 'onclick="handleMessageClick(this, \'' + msg.id + '\')"' : '' %>>
+          <div class="msg-bubble" <%- canAct ? `onclick="handleMessageClick(this, '${msg.id}')"` : '' %>>
             <div class="msg-sender"><%= msg.sender === 'admin' ? 'Support' : 'User' %></div>
             <div class="msg-content-wrapper" id="msg-content-<%= msg.id %>">
               <% if (msg.text) { %>
@@ -696,11 +697,12 @@
     let isSent = false;
     if (currentIsAdmin && msg.sender === 'admin') isSent = true;
     if (!currentIsAdmin && msg.sender === 'user') isSent = true;
+    let canAct = isSent || currentIsAdmin;
 
     const rowClass = isSent ? 'sent' : 'received';
     const avatar = msg.sender === 'admin' ? '🛡️' : '👤';
     const senderLabel = msg.sender === 'admin' ? 'Support' : 'User';
-    const clickAttr = isSent ? `onclick="handleMessageClick(this, '${msg.id}')"` : '';
+    const clickAttr = canAct ? `onclick="handleMessageClick(this, '${msg.id}')"` : '';
 
     let html = `<div class="msg-row ${rowClass}" style="animation-delay:${index * 0.05}s" data-id="${msg.id}">`;
     html += `<div class="msg-avatar">${avatar}</div>`;
