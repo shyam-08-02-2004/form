@@ -497,22 +497,18 @@
     /* ── Responsive ── */
     @media (max-width: 640px) {
       .navbar { padding: 0 10px; height: 56px; }
-      .navbar .brand { font-size: 1rem; }
-      .navbar .nav-links { gap: 2px; }
-      .navbar .nav-links a { padding: 5px 8px; font-size: 0.72rem; }
-      .chat-wrapper { padding: 8px 6px 0; }
-      .chat-messages { padding: 14px 10px; min-height: 280px; max-height: 50vh; }
-      .msg-bubble { max-width: 85%; padding: 10px 12px; font-size: 0.82rem; }
-      .msg-avatar { width: 28px; height: 28px; font-size: 0.65rem; }
-      .chat-header { padding: 12px 14px; gap: 10px; }
-      .chat-header .avatar { width: 38px; height: 38px; font-size: 1rem; }
+      .brand { font-size: 1.1rem; }
+      .nav-links a { font-size: 0.8rem; }
+      .chat-wrapper { height: calc(100vh - 56px); }
+      .chat-header { padding: 12px 14px; }
+      .chat-header .avatar { width: 36px; height: 36px; font-size: 1.1rem; }
       .chat-header .info h2 { font-size: 0.92rem; }
       .chat-header .info p { font-size: 0.7rem; }
-      .chat-input-area { padding: 10px 10px; }
-      .chat-form { gap: 6px; }
-      .chat-form textarea { height: 44px; padding: 10px 12px; font-size: 0.82rem; border-radius: 12px; }
-      .send-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; font-size: 1.1rem; }
-      .file-label { width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; }
+      .chat-input-area { padding: 10px; width: 100%; box-sizing: border-box; overflow: hidden; }
+      .chat-form { gap: 6px; width: 100%; box-sizing: border-box; margin: 0; }
+      .chat-form textarea { height: 44px; padding: 10px 12px; font-size: 0.82rem; border-radius: 12px; width: 100%; }
+      .send-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; }
+      .file-label { width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; }
       .waiting-banner { padding: 12px 14px; gap: 10px; }
       .waiting-banner .wait-icon { font-size: 1.2rem; }
       .waiting-banner .wait-text { font-size: 0.78rem; }
@@ -520,10 +516,11 @@
 
     @media (max-width: 380px) {
       .navbar .nav-links a { padding: 4px 6px; font-size: 0.68rem; }
-      .send-btn { width: 38px; height: 38px; min-width: 38px; min-height: 38px; font-size: 1rem; }
-      .file-label { width: 38px; height: 38px; font-size: 1rem; }
-      .chat-form textarea { height: 38px; padding: 8px 10px; font-size: 0.8rem; }
-      .chat-form { gap: 5px; }
+      .chat-input-area { padding: 8px; }
+      .chat-form { gap: 4px; }
+      .send-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; font-size: 1rem; flex-shrink: 0; }
+      .file-label { width: 40px; height: 40px; min-width: 40px; min-height: 40px; font-size: 1rem; flex-shrink: 0; }
+      .chat-form textarea { height: 40px; padding: 8px 10px; font-size: 0.8rem; width: 100%; }
       .file-name { top: -16px; font-size: 0.65rem; }
     }
   </style>
