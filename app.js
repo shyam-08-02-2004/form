@@ -157,10 +157,50 @@ app.post('/chat', upload.single('image'), (req, res) => {
 
   const now = new Date();
   const time = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+  
   if (text.trim() || image) {
-    chatMessages.push({ text, image, sender, time });
+    chatMessages.push({ id, text, image, sender, time, isEdited: false });
   }
   res.redirect('/chat');
+});
+
+// Edit message API
+app.post('/chat/edit', express.json(), (req, res) => {
+  const { id, newText } = req.body;
+  const isAdmin = req.session.user === 'admin';
+  const sender = isAdmin ? 'admin' : 'user';
+
+  const msg = chatMessages.find(m => m.id === id);
+  if (!msg) return res.status(404).json({ success: false, error: 'Message not found' });
+  
+  if (msg.sender !== sender && !isAdmin) {
+    return res.status(403).json({ success: false, error: 'Unauthorized' });
+  }
+
+  if (newText && newText.trim()) {
+    msg.text = newText.trim();
+    msg.isEdited = true;
+    return res.json({ success: true, message: msg });
+  }
+  res.status(400).json({ success: false, error: 'Invalid text' });
+});
+
+// Delete message API
+app.post('/chat/delete', express.json(), (req, res) => {
+  const { id } = req.body;
+  const isAdmin = req.session.user === 'admin';
+  const sender = isAdmin ? 'admin' : 'user';
+
+  const msgIndex = chatMessages.findIndex(m => m.id === id);
+  if (msgIndex === -1) return res.status(404).json({ success: false, error: 'Message not found' });
+
+  if (chatMessages[msgIndex].sender !== sender && !isAdmin) {
+    return res.status(403).json({ success: false, error: 'Unauthorized' });
+  }
+
+  chatMessages.splice(msgIndex, 1);
+  res.json({ success: true });
 });
 
 // Save Form Data
