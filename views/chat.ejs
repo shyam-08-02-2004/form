@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      background: rgba(15, 12, 41, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .brand {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.3px;
+    }
+    .navbar .nav-links { display: flex; gap: 6px; }
+    .navbar .nav-links a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 10px;
+      transition: all 0.25s ease;
+    }
+    .navbar .nav-links a:hover,
+    .navbar .nav-links a.active {
+      color: #fff;
+      background: rgba(167, 139, 250, 0.15);
+    }
+
+    /* ── Chat Container ── */
+    .chat-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 16px 0;
+    }
+
+    .chat-header {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .chat-header .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .chat-header .info h2 {
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .chat-header .info p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+    .chat-header .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34d399;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    /* ── Messages Area ── */
+    .chat-messages {
+      background: rgba(255,255,255,0.03);
+      border-left: 1px solid rgba(255,255,255,0.06);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 24px 20px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 350px;
+      max-height: 55vh;
+      scroll-behavior: smooth;
+    }
+    .chat-messages::-webkit-scrollbar { width: 5px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.3); border-radius: 10px; }
+
+    .empty-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+    .empty-chat .icon {
+      font-size: 2.5rem;
+      opacity: 0.4;
+    }
+    .empty-chat p {
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    /* ── Message Bubbles ── */
+    .msg-row {
+      display: flex;
+      gap: 10px;
+      animation: msgSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .msg-row.sent { flex-direction: row-reverse; }
+
+    @keyframes msgSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #fff;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .msg-row.received .msg-avatar { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+    .msg-row.sent .msg-avatar { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+
+    .msg-bubble {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      position: relative;
+      word-wrap: break-word;
+    }
+    .msg-row.received .msg-bubble {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+      border-top-left-radius: 4px;
+    }
+    .msg-row.sent .msg-bubble {
+      background: linear-gradient(135deg, rgba(96,165,250,0.25), rgba(59,130,246,0.2));
+      border: 1px solid rgba(96,165,250,0.2);
+      color: rgba(255,255,255,0.95);
+      border-top-right-radius: 4px;
+    }
+
+    .msg-sender {
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .msg-row.received .msg-sender { color: #a78bfa; }
+    .msg-row.sent .msg-sender { color: #60a5fa; }
+
+    .msg-text { margin: 0; }
+
+    .msg-bubble img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 8px;
+      display: block;
+    }
+
+    .msg-time {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* ── Input Area ── */
+    .chat-input-area {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 0 0 20px 20px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .textarea-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .chat-form textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      resize: none;
+      height: 48px;
+      max-height: 120px;
+      transition: all 0.25s ease;
+      outline: none;
+      display: block;
+    }
+    .chat-form textarea::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+    .chat-form textarea:focus {
+      border-color: rgba(167,139,250,0.4);
+      box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: rgba(255,255,255,0.5);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .file-label:hover {
+      background: rgba(167,139,250,0.15);
+      border-color: rgba(167,139,250,0.3);
+      color: #a78bfa;
+    }
+    .file-label input[type="file"] { display: none; }
+
+    .file-name {
+      font-size: 0.72rem;
+      color: rgba(167,139,250,0.7);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: absolute;
+      top: -18px;
+      left: 4px;
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(167,139,250,0.4);
+    }
+    .send-btn:active { transform: scale(0.95); }
+
+    /* ── Waiting Banner ── */
+    .waiting-banner {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: waitPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes waitPulse {
+      0%, 100% { border-color: rgba(251, 191, 36, 0.2); }
+      50% { border-color: rgba(251, 191, 36, 0.45); }
+    }
+    .waiting-banner .wait-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .waiting-banner .wait-text {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .waiting-banner .wait-text span {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+    .waiting-dots {
+      display: inline-flex;
+      gap: 3px;
+      margin-left: 4px;
+    }
+    .waiting-dots .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #fbbf24;
+      animation: dotBounce 1.4s ease-in-out infinite;
+    }
+    .waiting-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+    .waiting-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .navbar { padding: 0 10px; height: 56px; }
+      .navbar .brand { font-size: 1rem; }
+      .navbar .nav-links { gap: 2px; }
+      .navbar .nav-links a { padding: 5px 8px; font-size: 0.72rem; }
+      .chat-wrapper { padding: 8px 6px 0; }
+      .chat-messages { padding: 14px 10px; min-height: 280px; max-height: 50vh; }
+      .msg-bubble { max-width: 85%; padding: 10px 12px; font-size: 0.82rem; }
+      .msg-avatar { width: 28px; height: 28px; font-size: 0.65rem; }
+      .chat-header { padding: 12px 14px; gap: 10px; }
+      .chat-header .avatar { width: 38px; height: 38px; font-size: 1rem; }
+      .chat-header .info h2 { font-size: 0.92rem; }
+      .chat-header .info p { font-size: 0.7rem; }
+      .chat-input-area { padding: 10px 10px; }
+      .chat-form { gap: 6px; }
+      .chat-form textarea { height: 44px; padding: 10px 12px; font-size: 0.82rem; border-radius: 12px; }
+      .send-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; font-size: 1.1rem; }
+      .file-label { width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; }
+      .waiting-banner { padding: 12px 14px; gap: 10px; }
+      .waiting-banner .wait-icon { font-size: 1.2rem; }
+      .waiting-banner .wait-text { font-size: 0.78rem; }
+    }
+
+    @media (max-width: 380px) {
+      .navbar .nav-links a { padding: 4px 6px; font-size: 0.68rem; }
+      .send-btn { width: 38px; height: 38px; min-width: 38px; min-height: 38px; font-size: 1rem; }
+      .file-label { width: 38px; height: 38px; font-size: 1rem; }
+      .chat-form textarea { height: 38px; padding: 8px 10px; font-size: 0.8rem; }
+      .chat-form { gap: 5px; }
+      .file-name { top: -16px; font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="brand">💬 Support</div>
+  <div class="nav-links">
+    <% if (isAdmin) { %>
+      <a href="/form">Dashboard</a>
+    <% } else { %>
+      <a href="/">Home</a>
+    <% } %>
+    <a href="/profile">Profile</a>
+    <a href="/refer-earn">Refer & Earn</a>
+    <a href="/chat" class="active">Chat</a>
+  </div>
+</nav>
+
+<!-- Chat -->
+<div class="chat-wrapper">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="avatar">
+      <% if (isAdmin) { %>👤<% } else { %>🛡️<% } %>
+    </div>
+    <div class="info">
+      <h2><% if (isAdmin) { %>User Support Chat<% } else { %>Support Team<% } %></h2>
+      <p><% if (isAdmin) { %>Manage user queries<% } else { %>We typically reply within a few minutes<% } %></p>
+    </div>
+    <div style="flex:1"></div>
+    <div class="status-dot"></div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chatMessages">
+    <% if (!messages || messages.length === 0) { %>
+      <div class="empty-chat">
+        <div class="icon">💬</div>
+        <p>No messages yet — start a conversation!</p>
+      </div>
+    <% } else { %>
+      <% messages.forEach(function(msg, i){ %>
+        <%
+          // Determine if this message was sent by the current viewer
+          var isSent = false;
+          if (isAdmin && msg.sender === 'admin') isSent = true;
+          if (!isAdmin && msg.sender === 'user') isSent = true;
+        %>
+        <div class="msg-row <%= isSent ? 'sent' : 'received' %>" style="animation-delay: <%= i * 0.05 %>s">
+          <div class="msg-avatar">
+            <% if (msg.sender === 'admin') { %>🛡️<% } else { %>👤<% } %>
+          </div>
+          <div class="msg-bubble">
+            <div class="msg-sender"><%= msg.sender === 'admin' ? 'Support' : 'User' %></div>
+            <% if (msg.text) { %>
+              <p class="msg-text"><%= msg.text %></p>
+            <% } %>
+            <% if (msg.image) { %>
+              <img src="<%= msg.image %>" alt="Attached image" />
+            <% } %>
+            <div class="msg-time"><%= msg.time || '' %></div>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <% if (canSend) { %>
+      <form class="chat-form" action="/chat" method="POST" enctype="multipart/form-data">
+        <label class="file-label" title="Attach image">
+          📎
+          <input type="file" name="image" accept="image/*" id="fileInput" />
+        </label>
+        
+        <div class="input-group">
+          <span class="file-name" id="fileName"></span>
+          <textarea name="message" placeholder="Type your message..." rows="1" id="msgInput"></textarea>
+        </div>
+        
+        <button type="submit" class="send-btn" title="Send message">➤</button>
+      </form>
+    <% } else { %>
+      <div class="waiting-banner">
+        <div class="wait-icon">⏳</div>
+        <div class="wait-text">
+          <span>Admin reply ka wait karein</span> — aapka message bhej diya gaya hai, jaise hi support team reply karegi aap next message bhej payenge
+          <div class="waiting-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+</div>
+
+<script>
+  // Current state from server
+  let currentIsAdmin = <%= isAdmin ? 'true' : 'false' %>;
+  let currentCanSend = <%= canSend ? 'true' : 'false' %>;
+  let currentMsgCount = <%= messages ? messages.length : 0 %>;
+
+  // Auto-scroll to bottom
+  const chatBox = document.getElementById('chatMessages');
+  if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Auto-resize textarea
+  function initTextarea() {
+    const textarea = document.getElementById('msgInput');
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        this.style.height = '48px';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
+      // Submit on Enter (Shift+Enter for newline)
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.closest('form').submit();
+        }
+      });
+    }
+  }
+  initTextarea();
+
+  // Show file name on select
+  function initFileInput() {
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    if (fileInput && fileName) {
+      fileInput.addEventListener('change', function() {
+        fileName.textContent = this.files.length ? this.files[0].name : '';
+      });
+    }
+  }
+  initFileInput();
+
+  // Escape HTML to prevent XSS
+  function esc(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Build a single message row HTML
+  function buildMsgHTML(msg, index) {
+    let isSent = false;
+    if (currentIsAdmin && msg.sender === 'admin') isSent = true;
+    if (!currentIsAdmin && msg.sender === 'user') isSent = true;
+
+    const rowClass = isSent ? 'sent' : 'received';
+    const avatar = msg.sender === 'admin' ? '🛡️' : '👤';
+    const senderLabel = msg.sender === 'admin' ? 'Support' : 'User';
+
+    let html = '<div class="msg-row ' + rowClass + '" style="animation-delay:' + (index * 0.05) + 's">';
+    html += '<div class="msg-avatar">' + avatar + '</div>';
+    html += '<div class="msg-bubble">';
+    html += '<div class="msg-sender">' + esc(senderLabel) + '</div>';
+    if (msg.text) html += '<p class="msg-text">' + esc(msg.text) + '</p>';
+    if (msg.image) html += '<img src="' + esc(msg.image) + '" alt="Attached image" />';
+    html += '<div class="msg-time">' + esc(msg.time || '') + '</div>';
+    html += '</div></div>';
+    return html;
+  }
+
+  // Build input area HTML
+  function buildInputHTML(canSend) {
+    if (canSend) {
+      return `
+        <form class="chat-form" action="/chat" method="POST" enctype="multipart/form-data">
+          <label class="file-label" title="Attach image">
+            📎
+            <input type="file" name="image" accept="image/*" id="fileInput" />
+          </label>
+          
+          <div class="input-group">
+            <span class="file-name" id="fileName"></span>
+            <textarea name="message" placeholder="Type your message..." rows="1" id="msgInput"></textarea>
+          </div>
+          
+          <button type="submit" class="send-btn" title="Send message">➤</button>
+        </form>`;
+    } else {
+      return `
+        <div class="waiting-banner">
+          <div class="wait-icon">⏳</div>
+          <div class="wait-text">
+            <span>Admin reply ka wait karein</span> — aapka message bhej diya gaya hai, jaise hi support team reply karegi aap next message bhej payenge
+            <div class="waiting-dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+
+  // Poll for new messages every 3 seconds
+  setInterval(async () => {
+    try {
+      const resp = await fetch('/chat/messages', { credentials: 'same-origin' });
+      if (!resp.ok) return;
+      const data = await resp.json();
+
+      // Only update if something changed
+      if (data.messages.length !== currentMsgCount || data.canSend !== currentCanSend) {
+        // Update messages
+        const chatBox = document.getElementById('chatMessages');
+        if (chatBox) {
+          if (data.messages.length === 0) {
+            chatBox.innerHTML = '<div class="empty-chat"><div class="icon">💬</div><p>No messages yet — start a conversation!</p></div>';
+          } else {
+            let html = '';
+            data.messages.forEach(function(msg, i) {
+              html += buildMsgHTML(msg, i);
+            });
+            chatBox.innerHTML = html;
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+        }
+
+        // Update input area if canSend changed
+        if (data.canSend !== currentCanSend) {
+          const inputArea = document.querySelector('.chat-input-area');
+          if (inputArea) {
+            inputArea.innerHTML = buildInputHTML(data.canSend);
+            initTextarea();
+            initFileInput();
+          }
+        }
+
+        currentMsgCount = data.messages.length;
+        currentCanSend = data.canSend;
+      }
+    } catch (e) {
+      // silently ignore fetch errors
+    }
+  }, 3000);
+</script>
+
+</body>
+</html>
