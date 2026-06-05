@@ -1,28 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Access - VIP Casino</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at top right, #1a1a2e, #0B0B0F);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .auth-container {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(244, 197, 66, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(244, 197, 66, 0.05);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .brand h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      background: linear-gradient(135deg, #F4C542, #FDE047);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .brand p { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
+
+    .tabs {
+      display: flex;
+      background: rgba(0,0,0,0.4);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 30px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      background: rgba(244, 197, 66, 0.15);
+      color: #F4C542;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .form-section { display: none; }
+    .form-section.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+    .input-group input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #F4C542;
+      box-shadow: 0 0 0 4px rgba(244, 197, 66, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #F4C542, #EAB308);
+      color: #0B0B0F;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(244, 197, 66, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 197, 66, 0.4);
+    }
+
+    .bonus-badge {
+      background: rgba(244, 197, 66, 0.1);
+      color: #F4C542;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      border: 1px dashed rgba(244, 197, 66, 0.4);
+    }
+  </style>
 </head>
 <body>
 
+  <div class="auth-container">
+    <div class="brand">
+      <h1>VIP Casino</h1>
+      <p>Premium Gaming Experience</p>
+    </div>
 
-    <h1>Login Page</h1>
+    <div class="tabs">
+      <div class="tab" id="tab-login" onclick="switchTab('login')">Login</div>
+      <div class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</div>
+    </div>
 
-    <form action="/login" method="POST">
+    <!-- Login Form -->
+    <div class="form-section" id="form-login">
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Enter username" required>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn-submit">Enter VIP Lounge</button>
+      </form>
+    </div>
 
-        <input type="text" name="username" placeholder="Enter Username" required>
+    <!-- Signup Form -->
+    <div class="form-section" id="form-signup">
+      <form action="/signup" method="POST">
+        <div class="bonus-badge">
+          🎉 Sign up with a referral code to get <strong>150 Bonus Points</strong>!
+        </div>
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Choose a username" required>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Create a password" required>
+        </div>
+        <div class="input-group">
+          <label>Referral Code (Optional)</label>
+          <input type="text" name="refCode" id="refCodeInput" value="<%= ref %>" placeholder="Enter invite code">
+        </div>
+        <button type="submit" class="btn-submit">Create Account</button>
+      </form>
+    </div>
+  </div>
 
-        <br><br>
+  <script>
+    function switchTab(tab) {
+      document.getElementById('tab-login').classList.remove('active');
+      document.getElementById('tab-signup').classList.remove('active');
+      document.getElementById('form-login').classList.remove('active');
+      document.getElementById('form-signup').classList.remove('active');
 
-        <input type="password" name="password" placeholder="Enter Password" required>
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('form-' + tab).classList.add('active');
+    }
 
-        <br><br>
-
-        <button type="submit">Login</button>
-
-    </form>
+    // Auto-switch to signup if ref code is present
+    const refCode = '<%= ref %>';
+    if (refCode && refCode.trim() !== '') {
+      switchTab('signup');
+    } else {
+      switchTab('login');
+    }
+  </script>
 
 </body>
 </html>

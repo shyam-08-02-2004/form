@@ -1,19 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-        body {font-family: Arial, sans-serif; margin:0; padding:0;}
-        .content {padding:20px;}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - VIP Casino</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0B0B0F;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar {
+      background: rgba(11, 11, 15, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 64px;
+    }
+    .brand { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #F4C542; }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; }
+    
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+    
+    .profile-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(244, 197, 66, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    
+    .avatar {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    
+    .username {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .stat-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    
+    .stat-box.gold {
+      border-color: rgba(244, 197, 66, 0.3);
+      background: linear-gradient(145deg, rgba(244, 197, 66, 0.05), rgba(0,0,0,0.4));
+    }
+    
+    .stat-title {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .gold .stat-value {
+      color: #F4C542;
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 0 10px; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 0.8rem; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="content">
-  <h1>Welcome, <%= session.user %></h1>
-  <p>This is your profile page.</p>
+<nav class="navbar">
+  <div class="brand">VIP Casino</div>
+  <div class="nav-links">
+    <% if (user && user.username === 'admin') { %>
+      <a href="/form">Dashboard</a>
+    <% } %>
+    <a href="/profile" class="active">Profile</a>
+    <a href="/refer-earn">Refer & Earn</a>
+    <a href="/chat">Chat</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="profile-card">
+    <div class="avatar">👑</div>
+    <h1 class="username"><%= user ? user.username : 'Guest' %></h1>
+    
+    <div class="stats-grid">
+      <div class="stat-box gold">
+        <div class="stat-title">Wallet Balance</div>
+        <div class="stat-value"><%= user ? user.walletBalance : 0 %></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">My Referral Code</div>
+        <div class="stat-value" style="font-size: 1.8rem; margin-top: 8px;"><%= user ? user.referralCode : 'N/A' %></div>
+      </div>
+    </div>
+  </div>
 </div>
+
 </body>
 </html>

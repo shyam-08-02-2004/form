@@ -61,29 +61,88 @@ const studentSchema = new mongoose.Schema({
 
 const Student = mongoose.model("Student", studentSchema);
 
+const userSchema = new mongoose.Schema({
+    username: { type: String, unique: true },
+    password: { type: String },
+    walletBalance: { type: Number, default: 0 },
+    referralCode: { type: String, unique: true },
+    referredBy: { type: String, default: null }
+});
+const User = mongoose.model("User", userSchema);
+
 // Login Page
 app.get("/", (req, res) => {
-    res.render("login");
+    res.render("login", { ref: req.query.ref || '' });
+});
+
+// Signup Route
+app.post("/signup", async (req, res) => {
+    const { username, password, refCode } = req.body;
+    
+    try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.send("Username already exists. Please try another.");
+        }
+
+        // Generate a random 6-character referral code
+        const newRefCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        let initialBalance = 0;
+        let referredBy = null;
+
+        if (refCode && refCode.trim() !== '') {
+            const referrer = await User.findOne({ referralCode: refCode.trim() });
+            if (referrer) {
+                // Referrer gets 50 bonus
+                referrer.walletBalance += 50;
+                await referrer.save();
+                
+                // New user gets 150 bonus
+                initialBalance = 150;
+                referredBy = referrer.username;
+            }
+        }
+
+        const newUser = new User({
+            username,
+            password, // Plain text for now as per current setup, though normally should be hashed
+            walletBalance: initialBalance,
+            referralCode: newRefCode,
+            referredBy
+        });
+
+        await newUser.save();
+        req.session.user = username; // auto login
+        res.redirect("/profile");
+
+    } catch (err) {
+        console.error(err);
+        res.send("Error during signup.");
+    }
 });
 
 // Login Check
-app.post("/login", (req, res) => {
-
+app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    // Username & Password
-    if(username === "admin" && password === "1234"){
-
+    // Hardcoded Admin
+    if (username === "admin" && password === "1234") {
         req.session.user = username;
-
-        res.redirect("/form");
-
-    } else {
-
-        res.send("Wrong Username or Password");
-
+        return res.redirect("/form");
     }
 
+    try {
+        const user = await User.findOne({ username, password });
+        if (user) {
+            req.session.user = username;
+            res.redirect("/profile");
+        } else {
+            res.send("Wrong Username or Password");
+        }
+    } catch (err) {
+        res.send("An error occurred during login.");
+    }
 });
 
 // Form Page
@@ -99,19 +158,39 @@ app.get("/form", (req, res) => {
 });
 
 // Profile Page
-app.get('/profile', (req, res) => {
+app.get('/profile', async (req, res) => {
   if(!req.session.user){
     return res.redirect('/');
   }
-  res.render('profile');
+  
+  if (req.session.user === 'admin') {
+      return res.render('profile', { user: { username: 'admin', walletBalance: 0, referralCode: 'ADMIN' } });
+  }
+
+  try {
+      const user = await User.findOne({ username: req.session.user });
+      res.render('profile', { user });
+  } catch (err) {
+      res.send("Error loading profile");
+  }
 });
 
 // Refer & Earn Page
-app.get('/refer-earn', (req, res) => {
+app.get('/refer-earn', async (req, res) => {
   if(!req.session.user){
     return res.redirect('/');
   }
-  res.render('refer-earn');
+
+  if (req.session.user === 'admin') {
+      return res.render('refer-earn', { user: { username: 'admin', walletBalance: 0, referralCode: 'ADMIN' } });
+  }
+
+  try {
+      const user = await User.findOne({ username: req.session.user });
+      res.render('refer-earn', { user, host: req.get('host') });
+  } catch (err) {
+      res.send("Error loading refer page");
+  }
 });
 
 // Chat UI routes
