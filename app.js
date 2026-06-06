@@ -192,7 +192,17 @@ app.get('/dragon-tiger', async (req, res) => {
     return res.redirect('/');
   }
   try {
-    const user = await User.findOne({ username: req.session.user });
+    let user = await User.findOne({ username: req.session.user });
+    if (!user) {
+        // Auto-recreate user if lost due to Vercel memory wipe
+        user = new User({
+            username: req.session.user,
+            password: 'password',
+            walletBalance: 0,
+            referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+        });
+        await user.save();
+    }
     res.render('dragon-tiger', { user, host: req.get('host') });
   } catch (err) {
     res.send('Error loading game page');
