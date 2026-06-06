@@ -33,6 +33,12 @@ let studentsDB = [];
 app.set('trust proxy', 1); // Trust Vercel proxy for secure cookies
 app.use(express.urlencoded({ extended: true }));
 
+// Prevent caching on mobile browsers
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+
 app.use(cookieSession({
     name: 'session',
     keys: ['secretkey'],
