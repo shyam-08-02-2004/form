@@ -9,7 +9,7 @@
     "multer": "^2.1.1",
     "nodemon": "^3.1.14"
   },
-  "name": "form",
+  "name": "dragon-tiger",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",

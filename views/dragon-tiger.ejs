@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dragon Tiger – VIP Casino</title>
+  <link rel="stylesheet" href="/css/dragon-tiger.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">VIP Casino</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/form">Dashboard</a>
+      <a href="/profile">Profile</a>
+      <a href="/refer-earn">Refer & Earn</a>
+      <a href="/dragon-tiger" class="active">Dragon Tiger</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="game-card">
+      <h1 class="title">Dragon Tiger</h1>
+      <p class="subtitle">Select your side and try your luck! Higher card wins.</p>
+      <div class="selection">
+        <button id="dragonBtn" class="action-btn">Dragon 🐉</button>
+        <button id="tigerBtn" class="action-btn">Tiger 🐅</button>
+      </div>
+      <div class="result hidden" id="resultSection">
+        <div class="cards">
+          <div class="card" id="dragonCard"></div>
+          <div class="card" id="tigerCard"></div>
+        </div>
+        <p class="outcome" id="outcomeText"></p>
+        <button id="playAgain" class="action-btn play-again">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dragonBtn = document.getElementById('dragonBtn');
+    const tigerBtn = document.getElementById('tigerBtn');
+    const resultSection = document.getElementById('resultSection');
+    const dragonCardEl = document.getElementById('dragonCard');
+    const tigerCardEl = document.getElementById('tigerCard');
+    const outcomeText = document.getElementById('outcomeText');
+    const playAgainBtn = document.getElementById('playAgain');
+
+    const suitSymbols = ['♠','♥','♦','♣'];
+    function randomCard(){
+      const value = Math.floor(Math.random()*13)+1; // 1-13
+      const suit = suitSymbols[Math.floor(Math.random()*4)];
+      const display = value===1?'A':(value===11?'J':(value===12?'Q':(value===13?'K':value));
+      return {value, display, suit};
+    }
+    function showCard(el, card){
+      el.innerHTML = `<span class="value">${card.display}</span><span class="suit">${card.suit}</span>`;
+    }
+    function startGame(guess){
+      const dragon = randomCard();
+      const tiger = randomCard();
+      showCard(dragonCardEl, dragon);
+      showCard(tigerCardEl, tiger);
+      const winner = dragon.value > tiger.value ? 'dragon' : (dragon.value < tiger.value ? 'tiger' : 'draw');
+      let outcome='';
+      if(winner==='draw'){
+        outcome = "It's a draw! No win.";
+        outcomeText.style.color = '#F4C542';
+      } else if(winner===guess){
+        outcome = `You guessed ${guess} and won! 🎉`;
+        outcomeText.style.color = '#F4C542';
+      } else {
+        outcome = `You guessed ${guess} but lost. 😢`;
+        outcomeText.style.color = '#EF4444';
+      }
+      outcomeText.textContent = outcome;
+      resultSection.classList.remove('hidden');
+      dragonBtn.disabled = tigerBtn.disabled = true;
+    }
+    dragonBtn.addEventListener('click',()=>startGame('dragon'));
+    tigerBtn.addEventListener('click',()=>startGame('tiger'));
+    playAgainBtn.addEventListener('click',()=>{
+      resultSection.classList.add('hidden');
+      dragonBtn.disabled = tigerBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

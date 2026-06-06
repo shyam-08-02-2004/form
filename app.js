@@ -1,5 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// mongoose removed - using in-memory database
 const path = require("path");
 const multer = require("multer");
 const cookieSession = require("cookie-session");
@@ -25,15 +25,9 @@ const upload = multer({ storage: storage });
 // In‑memory chat messages (for demo purposes)
 let chatMessages = [];
 
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/studentDB";
-mongoose.connect(MONGODB_URI)
-.then(() => {
-    console.log("MongoDB Connected to " + (process.env.MONGODB_URI ? "Cloud" : "Local"));
-})
-.catch((err) => {
-    console.log(err);
-});
+// In-Memory Database (no MongoDB needed)
+let usersDB = [];
+let studentsDB = [];
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -48,27 +42,29 @@ app.use(cookieSession({
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Schema
-const studentSchema = new mongoose.Schema({
-    name: String,
-    age: Number,
-    studyYear: String,
-    education: String,
-    parentName: String,
-    mobile: String,
-    whatsapp: String
-});
+// In-Memory Models
+class Student {
+    constructor(data) { Object.assign(this, data); this._id = Math.random().toString(36).substr(2, 9); }
+    async save() { const idx = studentsDB.findIndex(s => s._id === this._id); if (idx >= 0) { studentsDB[idx] = this; } else { studentsDB.push(this); } }
+}
 
-const Student = mongoose.model("Student", studentSchema);
-
-const userSchema = new mongoose.Schema({
-    username: { type: String, unique: true },
-    password: { type: String },
-    walletBalance: { type: Number, default: 0 },
-    referralCode: { type: String, unique: true },
-    referredBy: { type: String, default: null }
-});
-const User = mongoose.model("User", userSchema);
+class User {
+    constructor(data) {
+        this.username = data.username;
+        this.password = data.password;
+        this.walletBalance = data.walletBalance || 0;
+        this.referralCode = data.referralCode || '';
+        this.referredBy = data.referredBy || null;
+        this._id = Math.random().toString(36).substr(2, 9);
+    }
+    async save() { const idx = usersDB.findIndex(u => u._id === this._id); if (idx >= 0) { usersDB[idx] = this; } else { usersDB.push(this); } }
+    static async findOne(query) {
+        return usersDB.find(u => {
+            for (let key in query) { if (u[key] !== query[key]) return false; }
+            return true;
+        }) || null;
+    }
+}
 
 // Login Page
 app.get("/", (req, res) => {
@@ -98,8 +94,8 @@ app.post("/signup", async (req, res) => {
                 referrer.walletBalance += 50;
                 await referrer.save();
                 
-                // New user gets 150 bonus
-                initialBalance = 150;
+                // New user gets 100 bonus
+                initialBalance = 100;
                 referredBy = referrer.username;
             }
         }
@@ -126,8 +122,7 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    // Hardcoded Admin
-    if (username === "admin" && password === "1234") {
+    if (username === "admin" && password === "babu@9755") {
         req.session.user = username;
         return res.redirect("/form");
     }
@@ -136,12 +131,15 @@ app.post("/login", async (req, res) => {
         const user = await User.findOne({ username, password });
         if (user) {
             req.session.user = username;
-            res.redirect("/profile");
+            return res.redirect("/profile");
         } else {
-            res.send("Wrong Username or Password");
+            // Invalid credentials
+            return res.render("login", { error: "Invalid username or password", ref: '' });
         }
     } catch (err) {
-        res.send("An error occurred during login.");
+        console.error("Login error:", err);
+        // Database or server error
+        return res.render("login", { error: "Server error, please try again later", ref: '' });
     }
 });
 
@@ -175,23 +173,43 @@ app.get('/profile', async (req, res) => {
   }
 });
 
-// Refer & Earn Page
+// Dragon Tiger Game Page
+app.get('/dragon-tiger', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/');
+  }
+  try {
+    const user = await User.findOne({ username: req.session.user });
+    res.render('dragon-tiger', { user, host: req.get('host') });
+  } catch (err) {
+    res.send('Error loading game page');
+  }
+});
+
 app.get('/refer-earn', async (req, res) => {
-  if(!req.session.user){
+  if (!req.session.user) {
     return res.redirect('/');
   }
 
   if (req.session.user === 'admin') {
-      return res.render('refer-earn', { user: { username: 'admin', walletBalance: 0, referralCode: 'ADMIN' } });
+    return res.render('refer-earn', { user: { username: 'admin', walletBalance: 0, referralCode: 'ADMIN' } });
   }
 
   try {
-      const user = await User.findOne({ username: req.session.user });
-      res.render('refer-earn', { user, host: req.get('host') });
+    const user = await User.findOne({ username: req.session.user });
+    res.render('refer-earn', { user, host: req.get('host') });
   } catch (err) {
-      res.send("Error loading refer page");
+    res.send("Error loading refer page");
   }
 });
+app.get('/admin', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/');
+  }
+  res.render('admin');
+});
+
+
 
 // Chat UI routes
 app.get('/chat', (req, res) => {

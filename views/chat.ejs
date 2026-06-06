@@ -3,927 +3,579 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Chat</title>
+  <title>VIP Live Support Chat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    /* ── Global ── */
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {background:#0B0B0F;font-family:'Inter',sans-serif;color:#F8FAFC;min-height:100vh;display:flex;flex-direction:column;}
+    a {color:inherit;text-decoration:none;}
+    .hidden {display:none !important;}
 
     /* ── Navbar ── */
-    .navbar {
-      background: rgba(15, 12, 41, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding: 0 24px;
-      height: 64px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .navbar .brand {
-      font-size: 1.15rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.3px;
-    }
-    .navbar .nav-links { display: flex; gap: 6px; }
-    .navbar .nav-links a {
-      color: rgba(255,255,255,0.65);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 8px 16px;
-      border-radius: 10px;
-      transition: all 0.25s ease;
-    }
-    .navbar .nav-links a:hover,
-    .navbar .nav-links a.active {
-      color: #fff;
-      background: rgba(167, 139, 250, 0.15);
-    }
+    .navbar {background:rgba(17,24,39,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+    .brand {font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;color:#F4C542;}
+    .nav-links a {margin-left:12px;font-size:0.9rem;color:rgba(255,255,255,0.6);transition:color 0.2s;}
+    .nav-links a:hover,.nav-links a.active {color:#F4C542;}
 
-    /* ── Chat Container ── */
-    .chat-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 20px 16px 0;
-    }
+    /* ── Chat Card ── */
+    .chat-card {background:rgba(17,24,39,0.45);border:1px solid rgba(244,197,66,0.2);border-radius:20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,0.6);margin:20px auto;padding:20px;max-width:800px;width:100%;display:flex;flex-direction:column;}
+    .chat-header {display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .agent-avatar {width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#0B0B0F;position:relative;}
+    .agent-avatar::after {content:"";width:12px;height:12px;background:#34d399;border:2px solid #0B0B0F;border-radius:50%;position:absolute;bottom:-4px;right:-4px;box-shadow:0 0 6px #34d399;}
+    .chat-info {flex:1;}
+    .chat-info h2 {font-size:1.1rem;color:#F8FAFC;margin:0;}
+    .chat-info p {font-size:0.85rem;color:rgba(255,255,255,0.5);margin:4px 0 0;}
+    .badges {display:flex;gap:8px;margin-top:6px;}
+    .badge {display:flex;align-items:center;gap:4px;font-size:0.75rem;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.08);color:#F8FAFC;}
+    .badge.secure {color:#F4C542;}
+    .badge.support24 {color:#94A3B8;}
 
-    .chat-header {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px 20px 0 0;
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .chat-header .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      color: #fff;
-      flex-shrink: 0;
-    }
-    .chat-header .info h2 {
-      color: #fff;
-      font-size: 1.05rem;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-    }
-    .chat-header .info p {
-      color: rgba(255,255,255,0.45);
-      font-size: 0.78rem;
-      margin-top: 2px;
-    }
-    .chat-header .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34d399;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.3); }
-    }
+    /* ── Messages ── */
+    .messages {flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:10px;max-height:55vh;}
+    .msg-row {display:flex;gap:10px;align-items:flex-start;}
+    .msg-row.sent {flex-direction:row-reverse;}
+    .msg-bubble {max-width:70%;padding:12px 16px;border-radius:16px;position:relative;font-size:0.9rem;line-height:1.5;word-break:break-word;cursor:pointer;transition:border-color 0.2s, box-shadow 0.2s;}
+    .msg-row.received .msg-bubble {background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);color:#F8FAFC;}
+    .msg-row.sent .msg-bubble {background:linear-gradient(135deg,rgba(244,197,66,0.15),rgba(244,197,66,0.05));border:1px solid rgba(244,197,66,0.2);color:#F8FAFC;}
+    .msg-sender {font-weight:600;margin-bottom:4px;color:#F4C542;}
+    .msg-time {font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:6px;text-align:right;}
+    .msg-bubble.selected {border:2px solid #F4C542 !important;box-shadow:0 0 16px rgba(244,197,66,0.35);}
+    .edited-badge {font-size:0.6rem;color:rgba(255,255,255,0.5);margin-left:6px;font-style:italic;}
+    .msg-bubble img {max-width:100%;border-radius:8px;margin-top:6px;}
 
-    /* ── Messages Area ── */
-    .chat-messages {
-      background: rgba(255,255,255,0.03);
-      border-left: 1px solid rgba(255,255,255,0.06);
-      border-right: 1px solid rgba(255,255,255,0.06);
-      padding: 24px 20px;
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 350px;
-      max-height: 55vh;
-      scroll-behavior: smooth;
-    }
-    .chat-messages::-webkit-scrollbar { width: 5px; }
-    .chat-messages::-webkit-scrollbar-track { background: transparent; }
-    .chat-messages::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.3); border-radius: 10px; }
-
-    .empty-chat {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: rgba(255,255,255,0.25);
-    }
-    .empty-chat .icon {
-      font-size: 2.5rem;
-      opacity: 0.4;
-    }
-    .empty-chat p {
-      font-size: 0.88rem;
-      font-weight: 500;
-    }
-
-    /* ── Message Bubbles ── */
-    .msg-row {
-      display: flex;
-      gap: 10px;
-      animation: msgSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .msg-row.sent { flex-direction: row-reverse; }
-
-    @keyframes msgSlideIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .msg-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      color: #fff;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .msg-row.received .msg-avatar { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
-    .msg-row.sent .msg-avatar { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
-
-    .msg-bubble {
-      max-width: 70%;
-      padding: 12px 16px;
-      border-radius: 16px;
-      font-size: 0.88rem;
-      line-height: 1.55;
-      position: relative;
-      word-wrap: break-word;
-    }
-    .msg-row.received .msg-bubble {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.9);
-      border-top-left-radius: 4px;
-    }
-    .msg-row.sent .msg-bubble {
-      background: linear-gradient(135deg, rgba(96,165,250,0.25), rgba(59,130,246,0.2));
-      border: 1px solid rgba(96,165,250,0.2);
-      color: rgba(255,255,255,0.95);
-      border-top-right-radius: 4px;
-    }
-
-    .msg-sender {
-      font-size: 0.72rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .msg-row.received .msg-sender { color: #a78bfa; }
-    .msg-row.sent .msg-sender { color: #60a5fa; }
-
-    .msg-text { margin: 0; }
-
-    .msg-bubble img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 8px;
-      display: block;
-    }
-
-    .msg-time {
-      font-size: 0.65rem;
-      color: rgba(255,255,255,0.3);
-      margin-top: 6px;
-      text-align: right;
-    }
+    /* ── Quick Replies ── */
+    .quick-replies {display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+    .quick-btn {background:rgba(244,197,66,0.15);color:#F8FAFC;border:none;border-radius:12px;padding:6px 12px;font-size:0.85rem;cursor:pointer;transition:transform 0.2s,background 0.2s;}
+    .quick-btn:hover {background:rgba(244,197,66,0.25);transform:scale(1.05);}
 
     /* ── Input Area ── */
-    .chat-input-area {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 0 0 20px 20px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
+    .input-area {background:rgba(255,255,255,0.05);border-top:1px solid rgba(255,255,255,0.08);border-radius:0 0 20px 20px;padding:12px 16px;display:flex;gap:8px;align-items:flex-end;}
+    .chat-form {display:flex;gap:8px;align-items:flex-end;width:100%;}
+    .textarea-wrap {flex:1;position:relative;}
+    .textarea-wrap textarea {width:100%;min-height:44px;max-height:120px;resize:none;border:none;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,0.06);color:#F8FAFC;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;transition:background 0.2s;}
+    .textarea-wrap textarea:focus {background:rgba(255,255,255,0.1);border:1px solid rgba(244,197,66,0.4);}
+    .icon-btn {width:38px;height:38px;border:none;border-radius:12px;background:rgba(255,255,255,0.06);color:#94A3B8;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;}
+    .icon-btn:hover {background:rgba(255,255,255,0.12);}
+    .send-btn {background:linear-gradient(135deg,#F4C542,#EAB308);color:#0B0B0F;border:none;border-radius:12px;width:48px;height:38px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s;}
+    .send-btn:hover {transform:translateY(-2px);}
+
+    /* ── Typing Indicator ── */
+    .typing-indicator {display:flex;align-items:center;gap:4px;margin-left:8px;}
+    .dot {width:6px;height:6px;background:#F4C542;border-radius:50%;animation:bounce 1.4s infinite;}
+    .dot:nth-child(2){animation-delay:0.2s;}
+    .dot:nth-child(3){animation-delay:0.4s;}
+    @keyframes bounce {0%,80%,100%{opacity:0.3;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}
+
+    /* ══════════════════════════════════════════
+       MESSAGE ACTION POPUP — Premium Dark UI
+       ══════════════════════════════════════════ */
+    .action-overlay {
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.5);
+      z-index:1000;
+      display:flex;align-items:flex-end;justify-content:center; /* Bottom sheet align */
+      opacity:0;pointer-events:none;
+      transition:opacity 0.25s ease;
+    }
+    .action-overlay.active {
+      opacity:1;pointer-events:auto;
+    }
+    .action-sheet {
+      background:#1a1d24; /* Dark theme to match image */
+      border-radius:24px 24px 0 0; /* Rounded top corners */
+      width:100%;max-width:100%;
+      padding:12px 0 20px 0;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      transform:translateY(100%);
+      transition:transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .action-overlay.active .action-sheet {
+      transform:translateY(0);
+    }
+    /* Action items */
+    .action-item {
+      display:flex;align-items:center;gap:20px;
+      padding:16px 24px;
+      cursor:pointer;
+      transition:background 0.2s;
+      border:none;background:none;width:100%;
+      text-align:left;font-family:'Inter',sans-serif;
+    }
+    .action-item:hover {
+      background:rgba(255,255,255,0.06);
+    }
+    .action-item:active {
+      background:rgba(255,255,255,0.1);
+    }
+    .action-icon {
+      display:flex;align-items:center;justify-content:center;
+      color:#E2E8F0;
+    }
+    .action-label {
+      font-size:1.1rem;font-weight:400;color:#E2E8F0;
+    }
+    .action-item.unsend .action-icon,
+    .action-item.unsend .action-label {
+      color:#EF4444;
+    }
+    /* Divider inside the sheet */
+    .action-divider {
+      height:1px;
+      background:rgba(255,255,255,0.04);
+      margin:0 24px;
     }
 
-    .chat-form {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .input-group {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .textarea-container {
-      position: relative;
-      width: 100%;
-    }
-
-    .chat-form textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 12px 16px;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      resize: none;
-      height: 48px;
-      max-height: 120px;
-      transition: all 0.25s ease;
-      outline: none;
-      display: block;
-    }
-    .chat-form textarea::placeholder {
-      color: rgba(255,255,255,0.3);
-    }
-    .chat-form textarea:focus {
-      border-color: rgba(167,139,250,0.4);
-      box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
-      background: rgba(255,255,255,0.08);
-    }
-
-    .file-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      color: rgba(255,255,255,0.5);
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    .file-label:hover {
-      background: rgba(167,139,250,0.15);
-      border-color: rgba(167,139,250,0.3);
-      color: #a78bfa;
-    }
-    .file-label input[type="file"] { display: none; }
-
-    .file-name {
-      font-size: 0.72rem;
-      color: rgba(167,139,250,0.7);
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      position: absolute;
-      top: -18px;
-      left: 4px;
-    }
-
-    .send-btn {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      min-height: 48px;
-      border-radius: 14px;
-      border: none;
-      background: linear-gradient(135deg, #a78bfa, #7c3aed);
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s ease;
-      flex-shrink: 0;
-    }
-    .send-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(167,139,250,0.4);
-    }
-    .send-btn:active { transform: scale(0.95); }
-
-    /* ── Waiting Banner ── */
-    .waiting-banner {
-      background: rgba(251, 191, 36, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.2);
-      border-radius: 14px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: waitPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes waitPulse {
-      0%, 100% { border-color: rgba(251, 191, 36, 0.2); }
-      50% { border-color: rgba(251, 191, 36, 0.45); }
-    }
-    .waiting-banner .wait-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-    .waiting-banner .wait-text {
-      color: rgba(255,255,255,0.7);
-      font-size: 0.85rem;
-      font-weight: 500;
-      line-height: 1.4;
-    }
-    .waiting-banner .wait-text span {
-      color: #fbbf24;
-      font-weight: 600;
-    }
-    .waiting-dots {
-      display: inline-flex;
-      gap: 3px;
-      margin-left: 4px;
-    }
-    .waiting-dots .dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #fbbf24;
-      animation: dotBounce 1.4s ease-in-out infinite;
-    }
-    .waiting-dots .dot:nth-child(2) { animation-delay: 0.2s; }
-    .waiting-dots .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dotBounce {
-      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1.2); }
-    }
-
-    /* ── VIP Action Menu ── */
-    .msg-action-menu {
-      position: absolute;
-      background: rgba(11, 11, 15, 0.9);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(244, 197, 66, 0.2);
-      border-radius: 16px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 10px rgba(244, 197, 66, 0.1);
-      z-index: 100;
-      opacity: 0;
-      transform: scale(0.9);
-      pointer-events: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .msg-action-menu.show {
-      opacity: 1;
-      transform: scale(1);
-      pointer-events: auto;
-    }
-    .action-btn {
-      background: transparent;
-      border: none;
-      color: rgba(255,255,255,0.8);
-      padding: 10px 16px;
-      font-size: 0.88rem;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
-      text-align: left;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s ease;
-    }
-    .action-btn:hover { background: rgba(255,255,255,0.05); }
-    .action-btn.edit:hover { color: #F4C542; background: rgba(244, 197, 66, 0.1); }
-    .action-btn.delete:hover { color: #EF4444; background: rgba(239, 68, 68, 0.1); }
-
-    .msg-bubble.selected {
-      border: 1px solid #F4C542 !important;
-      box-shadow: 0 0 15px rgba(244, 197, 66, 0.2);
-    }
-    
-    .edited-badge {
-      font-size: 0.6rem;
-      color: rgba(255,255,255,0.4);
-      margin-left: 6px;
-      font-style: italic;
-    }
-
-    /* ── VIP Modal ── */
+    /* ── Delete Confirm Modal ── */
     .vip-modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.8);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      z-index:2000;
+      display:none;align-items:center;justify-content:center;
     }
-    .vip-modal-overlay.show { opacity: 1; pointer-events: auto; }
+    .vip-modal-overlay.active {display:flex;}
     .vip-modal {
-      background: linear-gradient(145deg, #111827, #0B0B0F);
-      border: 1px solid rgba(244, 197, 66, 0.3);
-      border-radius: 20px;
-      padding: 24px;
-      width: 90%;
-      max-width: 320px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(244, 197, 66, 0.05);
-      transform: scale(0.9);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background:linear-gradient(180deg,#1a1f2e 0%,#111827 100%);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px;
+      padding:32px;max-width:360px;width:90%;text-align:center;
+      animation:modalPop 0.3s ease;
     }
-    .vip-modal-overlay.show .vip-modal { transform: scale(1); }
-    .vip-modal .warning-icon {
-      width: 60px; height: 60px; margin: 0 auto 16px; border-radius: 50%;
-      border: 2px solid #F4C542; display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; color: #F4C542; box-shadow: 0 0 15px rgba(244, 197, 66, 0.2);
+    @keyframes modalPop {
+      from {transform:scale(0.85);opacity:0;}
+      to {transform:scale(1);opacity:1;}
     }
-    .vip-modal p { color: rgba(255,255,255,0.9); font-size: 0.95rem; margin-bottom: 24px; }
-    .vip-modal .modal-actions { display: flex; gap: 12px; }
-    .vip-modal .btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; font-family: 'Inter', sans-serif;}
-    .vip-modal .btn.cancel { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-    .vip-modal .btn.cancel:hover { background: rgba(255,255,255,0.1); }
-    .vip-modal .btn.delete { background: linear-gradient(135deg, #EF4444, #B91C1C); color: #fff; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
-    .vip-modal .btn.delete:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+    .vip-modal .warning-icon {font-size:2.5rem;margin-bottom:12px;}
+    .vip-modal p {color:rgba(255,255,255,0.8);margin-bottom:20px;font-size:0.95rem;}
+    .modal-actions {display:flex;gap:12px;justify-content:center;}
+    .modal-actions .btn {
+      padding:10px 24px;border:none;border-radius:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:transform 0.2s;
+    }
+    .modal-actions .btn:hover {transform:translateY(-2px);}
+    .modal-actions .btn.cancel {background:rgba(255,255,255,0.08);color:#F8FAFC;}
+    .modal-actions .btn.delete {background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;}
 
-    /* ── Inline Edit ── */
-    .inline-edit-container { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-    .inline-edit-input {
-      background: rgba(0,0,0,0.3); border: 1px solid #F4C542; border-radius: 8px; padding: 8px 12px;
-      color: #fff; font-size: 0.88rem; outline: none; font-family: 'Inter', sans-serif; resize: none;
+    /* ── Edit inline ── */
+    .edit-input-wrap {display:flex;gap:8px;align-items:center;margin-top:8px;}
+    .edit-input-wrap input {flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(244,197,66,0.3);border-radius:8px;padding:8px 12px;color:#F8FAFC;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;}
+    .edit-input-wrap input:focus {border-color:#F4C542;}
+    .edit-input-wrap button {background:linear-gradient(135deg,#F4C542,#EAB308);color:#0B0B0F;border:none;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:0.85rem;}
+
+    /* ── Reply preview bar ── */
+    .reply-preview {
+      background:rgba(244,197,66,0.08);
+      border-left:3px solid #F4C542;
+      border-radius:0 8px 8px 0;
+      padding:8px 12px;margin-bottom:8px;
+      display:flex;align-items:center;justify-content:space-between;
+      font-size:0.82rem;color:rgba(255,255,255,0.7);
     }
-    .inline-edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .inline-edit-btn { padding: 4px 12px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all 0.2s ease;}
-    .inline-edit-btn.cancel { background: rgba(255,255,255,0.1); color: #fff; }
-    .inline-edit-btn.cancel:hover { background: rgba(255,255,255,0.2); }
-    .inline-edit-btn.save { background: #F4C542; color: #0B0B0F; font-weight: 600; }
-    .inline-edit-btn.save:hover { box-shadow: 0 0 10px rgba(244, 197, 66, 0.4); }
+    .reply-preview .reply-text {flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .reply-preview .close-reply {background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:1.1rem;padding:0 4px;}
+    /* Reply reference inside bubble */
+    .reply-ref {
+      background:rgba(244,197,66,0.08);
+      border-left:3px solid #F4C542;
+      border-radius:0 6px 6px 0;
+      padding:4px 8px;margin-bottom:6px;
+      font-size:0.78rem;color:rgba(255,255,255,0.5);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
 
     /* ── Responsive ── */
-    @media (max-width: 640px) {
-      .navbar { padding: 0 10px; height: 56px; }
-      .brand { font-size: 1.1rem; }
-      .nav-links a { font-size: 0.8rem; }
-      .chat-wrapper { height: calc(100vh - 56px); }
-      .chat-header { padding: 12px 14px; }
-      .chat-header .avatar { width: 36px; height: 36px; font-size: 1.1rem; }
-      .chat-header .info h2 { font-size: 0.92rem; }
-      .chat-header .info p { font-size: 0.7rem; }
-      .chat-input-area { padding: 10px; width: 100%; box-sizing: border-box; overflow: hidden; }
-      .chat-form { gap: 6px; width: 100%; box-sizing: border-box; margin: 0; }
-      .chat-form textarea { height: 44px; padding: 10px 12px; font-size: 0.82rem; border-radius: 12px; width: 100%; }
-      .send-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; }
-      .file-label { width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; }
-      .waiting-banner { padding: 12px 14px; gap: 10px; }
-      .waiting-banner .wait-icon { font-size: 1.2rem; }
-      .waiting-banner .wait-text { font-size: 0.78rem; }
+    @media (max-width:640px){
+      .navbar{height:56px;padding:0 12px;}
+      .brand{font-size:1rem;}
+      .chat-card{margin:8px;padding:12px;}
+      .agent-avatar{width:40px;height:40px;font-size:1.2rem;}
+      .msg-bubble{max-width:85%;font-size:0.85rem;}
+      .action-item{padding:16px 24px;}
     }
-
-    @media (max-width: 380px) {
-      .navbar .nav-links a { padding: 4px 6px; font-size: 0.68rem; }
-      .chat-input-area { padding: 8px; }
-      .chat-form { gap: 4px; }
-      .send-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; font-size: 1rem; flex-shrink: 0; }
-      .file-label { width: 40px; height: 40px; min-width: 40px; min-height: 40px; font-size: 1rem; flex-shrink: 0; }
-      .chat-form textarea { height: 40px; padding: 8px 10px; font-size: 0.8rem; width: 100%; }
-      .file-name { top: -16px; font-size: 0.65rem; }
+    
+    @media (min-width:641px){
+      .action-overlay { align-items:center; }
+      .action-sheet { max-width:340px; border-radius:16px; transform:scale(0.9); padding:8px 0; }
+      .action-overlay.active .action-sheet { transform:scale(1); }
     }
   </style>
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar">
-  <div class="brand">💬 Support</div>
-  <div class="nav-links">
-    <% if (isAdmin) { %>
-      <a href="/form">Dashboard</a>
-    <% } else { %>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">💬 VIP Support</div>
+    <div class="nav-links">
       <a href="/">Home</a>
-    <% } %>
-    <a href="/profile">Profile</a>
-    <a href="/refer-earn">Refer & Earn</a>
-    <a href="/chat" class="active">Chat</a>
-  </div>
-</nav>
-
-<!-- Chat -->
-<div class="chat-wrapper">
-
-  <!-- Header -->
-  <div class="chat-header">
-    <div class="avatar">
-      <% if (isAdmin) { %>👤<% } else { %>🛡️<% } %>
+      <a href="/profile">Profile</a>
+      <a href="/refer-earn">Refer & Earn</a>
+      <a href="/chat" class="active">Chat</a>
     </div>
-    <div class="info">
-      <h2><% if (isAdmin) { %>User Support Chat<% } else { %>Support Team<% } %></h2>
-      <p><% if (isAdmin) { %>Manage user queries<% } else { %>We typically reply within a few minutes<% } %></p>
-    </div>
-    <div style="flex:1"></div>
-    <div class="status-dot"></div>
-  </div>
+  </nav>
 
-  <!-- Messages -->
-  <div class="chat-messages" id="chatMessages">
-    <% if (!messages || messages.length === 0) { %>
-      <div class="empty-chat">
-        <div class="icon">💬</div>
-        <p>No messages yet — start a conversation!</p>
+  <div class="chat-card">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="agent-avatar">🧑‍💼</div>
+      <div class="chat-info">
+        <h2>Live Support Agent</h2>
+        <p>Here to assist you 24/7 with any issues.</p>
+        <div class="badges">
+          <div class="badge secure">🔒 Secure Chat</div>
+          <div class="badge support24">🎧 24/7 Support</div>
+        </div>
       </div>
-    <% } else { %>
-      <% messages.forEach(function(msg, i){ %>
-        <%
-          // Determine if this message was sent by the current viewer
-          var isSent = false;
-          if (isAdmin && msg.sender === 'admin') isSent = true;
-          if (!isAdmin && msg.sender === 'user') isSent = true;
-          var canAct = isSent || isAdmin;
-        %>
-        <div class="msg-row <%= isSent ? 'sent' : 'received' %>" style="animation-delay: <%= i * 0.05 %>s" data-id="<%= msg.id %>">
-          <div class="msg-avatar">
-            <% if (msg.sender === 'admin') { %>🛡️<% } else { %>👤<% } %>
-          </div>
-          <div class="msg-bubble" <%- canAct ? `onclick="handleMessageClick(this, '${msg.id}')"` : '' %>>
-            <div class="msg-sender"><%= msg.sender === 'admin' ? 'Support' : 'User' %></div>
-            <div class="msg-content-wrapper" id="msg-content-<%= msg.id %>">
-              <% if (msg.text) { %>
-                <p class="msg-text"><%= msg.text %></p>
-              <% } %>
-              <% if (msg.image) { %>
-                <img src="<%= msg.image %>" alt="Attached image" />
-              <% } %>
-            </div>
-            <div class="msg-time">
-              <%= msg.time || '' %>
-              <% if (msg.isEdited) { %><span class="edited-badge">Edited</span><% } %>
-            </div>
-          </div>
-        </div>
-      <% }); %>
-    <% } %>
-  </div>
+      <div style="width:12px;height:12px;background:#34d399;border-radius:50%;box-shadow:0 0 6px #34d399;" title="Agent Online"></div>
+    </div>
 
-  <!-- Input -->
-  <div class="chat-input-area">
-    <% if (canSend) { %>
-      <form class="chat-form" action="/chat" method="POST" enctype="multipart/form-data">
-        <label class="file-label" title="Attach image">
-          📎
-          <input type="file" name="image" accept="image/*" id="fileInput" />
-        </label>
-        
-        <div class="input-group">
-          <span class="file-name" id="fileName"></span>
-          <textarea name="message" placeholder="Type your message..." rows="1" id="msgInput"></textarea>
+    <!-- Messages -->
+    <div class="messages" id="chatMessages">
+      <% if (!messages || messages.length === 0) { %>
+        <div style="text-align:center;color:rgba(255,255,255,0.4);">
+          <p>No messages yet – start a conversation!</p>
         </div>
-        
-        <button type="submit" class="send-btn" title="Send message">➤</button>
+      <% } else { %>
+        <% messages.forEach(function(msg, i){ %>
+          <% var isSent = false; if (isAdmin && msg.sender==='admin') isSent=true; if (!isAdmin && msg.sender==='user') isSent=true; var canAct = isSent || isAdmin; %>
+          <div class="msg-row <%= isSent ? 'sent' : 'received' %>" data-id="<%= msg.id %>">
+            <div class="msg-avatar"><%= msg.sender==='admin' ? '🛡️' : '👤' %></div>
+            <div class="msg-bubble" onclick="openActionSheet('<%= msg.id %>', <%= canAct %>, this)" oncontextmenu="event.preventDefault(); openActionSheet('<%= msg.id %>', <%= canAct %>, this)">
+              <div class="msg-sender"><%= msg.sender==='admin' ? 'Support' : 'User' %></div>
+              <div class="msg-content-wrapper" id="msg-content-<%= msg.id %>">
+                <% if (msg.text) { %><p class="msg-text"><%= msg.text %></p><% } %>
+                <% if (msg.image) { %><img src="<%= msg.image %>" alt="Attachment" /><% } %>
+              </div>
+              <div class="msg-time"><%= msg.time || '' %><% if (msg.isEdited) { %><span class="edited-badge">Edited</span><% } %></div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <!-- Quick Replies -->
+    <div class="quick-replies">
+      <button class="quick-btn" onclick="setQuickReply('Deposit Issue')">Deposit Issue</button>
+      <button class="quick-btn" onclick="setQuickReply('Withdrawal Issue')">Withdrawal Issue</button>
+      <button class="quick-btn" onclick="setQuickReply('Bonus Issue')">Bonus Issue</button>
+      <button class="quick-btn" onclick="setQuickReply('Account Help')">Account Help</button>
+    </div>
+
+    <!-- Reply Preview Bar (shown when replying) -->
+    <div class="reply-preview hidden" id="replyPreview">
+      <span class="reply-text" id="replyPreviewText"></span>
+      <button class="close-reply" onclick="cancelReply()">✕</button>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <form class="chat-form" action="/chat" method="POST" enctype="multipart/form-data" id="chatForm">
+        <input type="hidden" name="replyTo" id="replyToInput" value="" />
+        <label class="icon-btn" title="Attach image">📎<input type="file" name="image" accept="image/*" id="fileInput" style="display:none;" /></label>
+        <label class="icon-btn" title="Emoji" onclick="openEmojiPicker()">😊</label>
+        <div class="textarea-wrap"><textarea name="message" placeholder="Type your message..." rows="1" id="msgInput"></textarea></div>
+        <button type="submit" class="send-btn" title="Send">➤</button>
       </form>
-    <% } else { %>
-      <div class="waiting-banner">
-        <div class="wait-icon">⏳</div>
-        <div class="wait-text">
-          <span>Admin reply ka wait karein</span> — aapka message bhej diya gaya hai, jaise hi support team reply karegi aap next message bhej payenge
-          <div class="waiting-dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-        </div>
-      </div>
-    <% } %>
-  </div>
-
-</div>
-
-<!-- VIP Delete Modal -->
-<div class="vip-modal-overlay" id="deleteModal">
-  <div class="vip-modal">
-    <div class="warning-icon">⚠️</div>
-    <p>Are you sure you want to delete this message?</p>
-    <div class="modal-actions">
-      <button class="btn cancel" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn delete" id="confirmDeleteBtn">Delete</button>
     </div>
   </div>
-</div>
 
-<!-- VIP Action Menu -->
-<div class="msg-action-menu" id="actionMenu">
-  <button class="action-btn edit" id="editActionBtn">✏️ Edit Message</button>
-  <button class="action-btn delete" id="deleteActionBtn">🗑️ Delete Message</button>
-</div>
+  <!-- ═══ ACTION SHEET OVERLAY ═══ -->
+  <div class="action-overlay" id="actionOverlay" onclick="closeActionSheet(event)">
+    <div class="action-sheet" id="actionSheet">
 
-<script>
-  // Current state from server
-  let currentIsAdmin = <%= isAdmin ? 'true' : 'false' %>;
-  let currentCanSend = <%= canSend ? 'true' : 'false' %>;
-  let currentMessagesJSON = JSON.stringify(<%- JSON.stringify(messages || []) %>);
+      <!-- Reply -->
+      <button class="action-item" id="replyAction" onclick="doReply()">
+        <div class="action-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        </div>
+        <span class="action-label">Reply</span>
+      </button>
+      <div class="action-divider"></div>
 
-  const chatBox = document.getElementById('chatMessages');
-  if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+      <!-- Edit -->
+      <button class="action-item" id="editAction" onclick="doEdit()">
+        <div class="action-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <span class="action-label">Edit</span>
+      </button>
+      <div class="action-divider"></div>
 
-  // Auto-resize textarea
-  function initTextarea() {
-    const textarea = document.getElementById('msgInput');
-    if (textarea) {
-      textarea.addEventListener('input', function() {
-        this.style.height = '48px';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-      });
-      textarea.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          this.closest('form').submit();
-        }
-      });
-    }
-  }
-  initTextarea();
+      <!-- Copy -->
+      <button class="action-item" onclick="doCopy()">
+        <div class="action-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </div>
+        <span class="action-label">Copy</span>
+      </button>
+      <div class="action-divider"></div>
 
-  function initFileInput() {
-    const fileInput = document.getElementById('fileInput');
-    const fileName = document.getElementById('fileName');
-    if (fileInput && fileName) {
-      fileInput.addEventListener('change', function() {
-        fileName.textContent = this.files.length ? this.files[0].name : '';
-      });
-    }
-  }
-  initFileInput();
+      <!-- Unsend (Delete) -->
+      <button class="action-item unsend" id="unsendAction" onclick="doUnsend()">
+        <div class="action-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 12H8m0 0l4-4m-4 4l4 4"/></svg>
+        </div>
+        <span class="action-label">Unsend</span>
+      </button>
 
-  function esc(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+    </div>
+  </div>
 
-  function buildMsgHTML(msg, index) {
-    let isSent = false;
-    if (currentIsAdmin && msg.sender === 'admin') isSent = true;
-    if (!currentIsAdmin && msg.sender === 'user') isSent = true;
-    let canAct = isSent || currentIsAdmin;
+  <!-- ═══ DELETE CONFIRM MODAL ═══ -->
+  <div class="vip-modal-overlay" id="deleteModal">
+    <div class="vip-modal">
+      <div class="warning-icon">⚠️</div>
+      <p>Are you sure you want to unsend this message?</p>
+      <div class="modal-actions">
+        <button class="btn cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn delete" id="confirmDeleteBtn">Unsend</button>
+      </div>
+    </div>
+  </div>
 
-    const rowClass = isSent ? 'sent' : 'received';
-    const avatar = msg.sender === 'admin' ? '🛡️' : '👤';
-    const senderLabel = msg.sender === 'admin' ? 'Support' : 'User';
-    const clickAttr = canAct ? `onclick="handleMessageClick(this, '${msg.id}')"` : '';
-
-    let html = `<div class="msg-row ${rowClass}" style="animation-delay:${index * 0.05}s" data-id="${msg.id}">`;
-    html += `<div class="msg-avatar">${avatar}</div>`;
-    html += `<div class="msg-bubble" ${clickAttr}>`;
-    html += `<div class="msg-sender">${esc(senderLabel)}</div>`;
-    html += `<div class="msg-content-wrapper" id="msg-content-${msg.id}">`;
-    if (msg.text) html += `<p class="msg-text">${esc(msg.text)}</p>`;
-    if (msg.image) html += `<img src="${esc(msg.image)}" alt="Attached image" />`;
-    html += `</div>`;
-    html += `<div class="msg-time">${esc(msg.time || '')}`;
-    if (msg.isEdited) html += `<span class="edited-badge">Edited</span>`;
-    html += `</div></div></div>`;
-    return html;
-  }
-
-  function buildInputHTML(canSend) {
-    if (canSend) {
-      return `
-        <form class="chat-form" action="/chat" method="POST" enctype="multipart/form-data">
-          <label class="file-label" title="Attach image">
-            📎
-            <input type="file" name="image" accept="image/*" id="fileInput" />
-          </label>
-          <div class="input-group">
-            <span class="file-name" id="fileName"></span>
-            <textarea name="message" placeholder="Type your message..." rows="1" id="msgInput"></textarea>
-          </div>
-          <button type="submit" class="send-btn" title="Send message">➤</button>
-        </form>`;
-    } else {
-      return `
-        <div class="waiting-banner">
-          <div class="wait-icon">⏳</div>
-          <div class="wait-text">
-            <span>Admin reply ka wait karein</span> — aapka message bhej diya gaya hai, jaise hi support team reply karegi aap next message bhej payenge
-            <div class="waiting-dots">
-              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
-          </div>
-        </div>`;
-    }
-  }
-
-  // VIP Action Menu Logic
-  let selectedMsgId = null;
-  let selectedBubble = null;
-
-  function handleMessageClick(bubble, id) {
-    if (bubble.querySelector('.inline-edit-container')) return;
-
-    if (selectedBubble && selectedBubble !== bubble) {
-      selectedBubble.classList.remove('selected');
-    }
-
-    if (selectedBubble === bubble) {
-      closeActionMenu();
-      return;
-    }
-
-    selectedMsgId = id;
-    selectedBubble = bubble;
-    bubble.classList.add('selected');
-
-    const menu = document.getElementById('actionMenu');
-    const rect = bubble.getBoundingClientRect();
-    const chatRect = chatBox.getBoundingClientRect();
+  <script>
+    /* ── State ── */
+    let currentIsAdmin = <%= isAdmin ? 'true' : 'false' %>;
+    let currentCanSend = <%= canSend ? 'true' : 'false' %>;
+    let selectedMsgId = null;
+    let selectedBubble = null;
+    let selectedCanAct = false;
+    let replyToId = null;
     
-    menu.style.top = (rect.top - chatRect.top + chatBox.scrollTop - 10) + 'px';
-    const isSent = bubble.closest('.msg-row').classList.contains('sent');
-    
-    if (isSent) {
-      menu.style.right = (chatRect.right - rect.left + 10) + 'px';
-      menu.style.left = 'auto';
-    } else {
-      menu.style.left = (rect.right - chatRect.left + 10) + 'px';
-      menu.style.right = 'auto';
-    }
-    
-    menu.classList.add('show');
-  }
+    // Store initial messages state to detect changes
+    let lastMessagesHash = JSON.stringify(<%- JSON.stringify(messages || []) %>);
 
-  function closeActionMenu() {
-    document.getElementById('actionMenu').classList.remove('show');
-    if (selectedBubble) {
-      selectedBubble.classList.remove('selected');
+    /* ── Scroll to bottom ── */
+    const chatBox = document.getElementById('chatMessages');
+    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+    /* ── Textarea auto-resize ── */
+    (function(){
+      const ta = document.getElementById('msgInput');
+      if (!ta) return;
+      ta.addEventListener('input', function(){ this.style.height='44px'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
+      ta.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();this.closest('form').submit();} });
+    })();
+
+    /* ── File input ── */
+    (function(){
+      const fi = document.getElementById('fileInput');
+      if (fi) fi.addEventListener('change', function(){ /* optional file name display */ });
+    })();
+
+    /* ── Quick Reply ── */
+    function setQuickReply(text){ document.getElementById('msgInput').value=text; document.getElementById('msgInput').focus(); }
+    function openEmojiPicker(){ const ta=document.getElementById('msgInput'); ta.value+=' 😊'; ta.focus(); }
+
+    /* ════════════════════════════
+       ACTION SHEET – Open / Close
+       ════════════════════════════ */
+    function openActionSheet(msgId, canAct, bubbleEl) {
+      selectedMsgId = msgId;
+      selectedBubble = bubbleEl;
+      selectedCanAct = canAct;
+
+      // Highlight the selected bubble
+      document.querySelectorAll('.msg-bubble.selected').forEach(b => b.classList.remove('selected'));
+      bubbleEl.classList.add('selected');
+
+      // Show/hide edit & unsend based on ownership
+      document.getElementById('editAction').style.display = canAct ? 'flex' : 'none';
+      document.getElementById('unsendAction').style.display = canAct ? 'flex' : 'none';
+
+      // Show overlay
+      document.getElementById('actionOverlay').classList.add('active');
+    }
+
+    function closeActionSheet(e) {
+      if (e && e.target !== document.getElementById('actionOverlay')) return;
+      document.getElementById('actionOverlay').classList.remove('active');
+      if (selectedBubble) selectedBubble.classList.remove('selected');
+      selectedMsgId = null;
       selectedBubble = null;
     }
-    selectedMsgId = null;
-  }
 
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('actionMenu');
-    if (menu.classList.contains('show')) {
-      if (!menu.contains(e.target) && (!selectedBubble || !selectedBubble.contains(e.target))) {
-        closeActionMenu();
+    /* ── Reply ── */
+    function doReply() {
+      closeActionSheet({ target: document.getElementById('actionOverlay') });
+      if (!selectedMsgId) return;
+      // Get the message text
+      const wrapper = document.getElementById('msg-content-' + selectedMsgId);
+      const textEl = wrapper ? wrapper.querySelector('.msg-text') : null;
+      const text = textEl ? textEl.textContent : '(image)';
+
+      replyToId = selectedMsgId;
+      document.getElementById('replyToInput').value = selectedMsgId;
+      document.getElementById('replyPreviewText').textContent = '↩ ' + text.substring(0, 60);
+      document.getElementById('replyPreview').classList.remove('hidden');
+      document.getElementById('msgInput').focus();
+    }
+
+    function cancelReply() {
+      replyToId = null;
+      document.getElementById('replyToInput').value = '';
+      document.getElementById('replyPreview').classList.add('hidden');
+    }
+
+    /* ── Copy ── */
+    function doCopy() {
+      if (!selectedMsgId) { closeActionSheet({ target: document.getElementById('actionOverlay') }); return; }
+      const wrapper = document.getElementById('msg-content-' + selectedMsgId);
+      const textEl = wrapper ? wrapper.querySelector('.msg-text') : null;
+      const text = textEl ? textEl.textContent : '';
+      if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+          closeActionSheet({ target: document.getElementById('actionOverlay') });
+        }).catch(() => {
+          closeActionSheet({ target: document.getElementById('actionOverlay') });
+        });
+      } else {
+        closeActionSheet({ target: document.getElementById('actionOverlay') });
       }
     }
-  });
 
-  // Delete Handlers
-  document.getElementById('deleteActionBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('deleteModal').classList.add('show');
-    document.getElementById('actionMenu').classList.remove('show');
-  });
+    /* ── Edit ── */
+    function doEdit() {
+      const msgId = selectedMsgId;
+      closeActionSheet({ target: document.getElementById('actionOverlay') });
+      if (!msgId) return;
 
-  function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.remove('show');
-    closeActionMenu();
-  }
+      const wrapper = document.getElementById('msg-content-' + msgId);
+      if (!wrapper) return;
+      const textEl = wrapper.querySelector('.msg-text');
+      const currentText = textEl ? textEl.textContent : '';
 
-  document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-    if (!selectedMsgId) return;
-    const idToDelete = selectedMsgId;
-    closeDeleteModal();
+      // Replace content with inline edit
+      wrapper.innerHTML = `
+        <div class="edit-input-wrap">
+          <input type="text" id="editInput-${msgId}" value="${currentText.replace(/"/g,'&quot;')}" />
+          <button onclick="submitEdit('${msgId}')">Save</button>
+        </div>`;
+      document.getElementById('editInput-' + msgId).focus();
+    }
 
-    try {
-      const res = await fetch('/chat/delete', {
+    function submitEdit(msgId) {
+      const input = document.getElementById('editInput-' + msgId);
+      if (!input) return;
+      const newText = input.value.trim();
+      if (!newText) return;
+
+      fetch('/chat/edit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: idToDelete })
-      });
-      if (res.ok) fetchMessagesNow();
-    } catch (e) {}
-  });
-
-  // Edit Handlers
-  document.getElementById('editActionBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (!selectedMsgId || !selectedBubble) return;
-
-    const contentWrapper = document.getElementById('msg-content-' + selectedMsgId);
-    const textEl = contentWrapper.querySelector('.msg-text');
-    const oldText = textEl ? textEl.innerText : '';
-
-    const editHtml = `
-      <div class="inline-edit-container">
-        <textarea class="inline-edit-input" id="edit-input-${selectedMsgId}" rows="2">${esc(oldText)}</textarea>
-        <div class="inline-edit-actions">
-          <button class="inline-edit-btn cancel" onclick="cancelEdit('${selectedMsgId}')">Cancel</button>
-          <button class="inline-edit-btn save" onclick="saveEdit('${selectedMsgId}')">Save</button>
-        </div>
-      </div>
-    `;
-    
-    contentWrapper.style.display = 'none';
-    const editDiv = document.createElement('div');
-    editDiv.id = 'edit-wrapper-' + selectedMsgId;
-    editDiv.innerHTML = editHtml;
-    contentWrapper.parentNode.insertBefore(editDiv, contentWrapper.nextSibling);
-
-    closeActionMenu();
-  });
-
-  function cancelEdit(id) {
-    const wrapper = document.getElementById('edit-wrapper-' + id);
-    if (wrapper) wrapper.remove();
-    const content = document.getElementById('msg-content-' + id);
-    if (content) content.style.display = 'block';
-  }
-
-  async function saveEdit(id) {
-    const input = document.getElementById('edit-input-' + id);
-    if (!input) return;
-    const newText = input.value;
-
-    try {
-      const res = await fetch('/chat/edit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, newText })
-      });
-      if (res.ok) fetchMessagesNow();
-    } catch (e) {}
-  }
-
-  async function fetchMessagesNow() {
-    try {
-      const resp = await fetch('/chat/messages', { credentials: 'same-origin' });
-      if (!resp.ok) return;
-      const data = await resp.json();
-      processNewData(data);
-    } catch (e) {}
-  }
-
-  function processNewData(data) {
-    const newMessagesJSON = JSON.stringify(data.messages);
-    if (newMessagesJSON !== currentMessagesJSON || data.canSend !== currentCanSend) {
-      if (document.querySelector('.inline-edit-container')) {
-         return; // Delay update if user is currently editing
-      }
-
-      if (newMessagesJSON !== currentMessagesJSON) {
-        if (chatBox) {
-          if (data.messages.length === 0) {
-            chatBox.innerHTML = '<div class="empty-chat"><div class="icon">💬</div><p>No messages yet — start a conversation!</p></div>';
-          } else {
-            let html = '';
-            data.messages.forEach(function(msg, i) { html += buildMsgHTML(msg, i); });
-            chatBox.innerHTML = html;
-            chatBox.scrollTop = chatBox.scrollHeight;
+        body: JSON.stringify({ id: msgId, newText: newText })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const wrapper = document.getElementById('msg-content-' + msgId);
+          wrapper.innerHTML = '<p class="msg-text">' + data.message.text + '</p>';
+          // Add edited badge
+          const row = document.querySelector(`[data-id="${msgId}"]`);
+          if (row) {
+            const timeEl = row.querySelector('.msg-time');
+            if (timeEl && !timeEl.querySelector('.edited-badge')) {
+              timeEl.innerHTML += '<span class="edited-badge">Edited</span>';
+            }
           }
         }
-        currentMessagesJSON = newMessagesJSON;
-      }
+      })
+      .catch(err => console.error(err));
+    }
 
-      if (data.canSend !== currentCanSend) {
-        const inputArea = document.querySelector('.chat-input-area');
-        if (inputArea) {
-          inputArea.innerHTML = buildInputHTML(data.canSend);
-          initTextarea();
-          initFileInput();
-        }
-        currentCanSend = data.canSend;
+    /* ── Unsend (Delete) ── */
+    function doUnsend() {
+      closeActionSheet({ target: document.getElementById('actionOverlay') });
+      document.getElementById('deleteModal').classList.add('active');
+      document.getElementById('confirmDeleteBtn').onclick = function() {
+        if (!selectedMsgId) { closeDeleteModal(); return; }
+        fetch('/chat/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: selectedMsgId })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            const row = document.querySelector(`[data-id="${selectedMsgId}"]`);
+            if (row) row.remove();
+          }
+          closeDeleteModal();
+        })
+        .catch(() => closeDeleteModal());
+      };
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    /* ── Live Updates Render function ── */
+    function renderMessages(messages, isAdmin) {
+      const container = document.getElementById('chatMessages');
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);"><p>No messages yet – start a conversation!</p></div>';
+        return;
+      }
+      
+      let html = '';
+      messages.forEach(msg => {
+        let isSent = false;
+        if (isAdmin && msg.sender === 'admin') isSent = true;
+        if (!isAdmin && msg.sender === 'user') isSent = true;
+        let canAct = isSent || isAdmin;
+        
+        let avatar = msg.sender === 'admin' ? '🛡️' : '👤';
+        let senderName = msg.sender === 'admin' ? 'Support' : 'User';
+        let editedBadge = msg.isEdited ? '<span class="edited-badge">Edited</span>' : '';
+        
+        let contentHtml = '';
+        if (msg.text) contentHtml += '<p class="msg-text">' + msg.text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>';
+        if (msg.image) contentHtml += '<img src="' + msg.image + '" alt="Attachment" />';
+        
+        html += `
+          <div class="msg-row ${isSent ? 'sent' : 'received'}" data-id="${msg.id}">
+            <div class="msg-avatar">${avatar}</div>
+            <div class="msg-bubble" onclick="openActionSheet('${msg.id}', ${canAct}, this)" oncontextmenu="event.preventDefault(); openActionSheet('${msg.id}', ${canAct}, this)">
+              <div class="msg-sender">${senderName}</div>
+              <div class="msg-content-wrapper" id="msg-content-${msg.id}">
+                ${contentHtml}
+              </div>
+              <div class="msg-time">${msg.time || ''}${editedBadge}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      // Save scroll position
+      const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+      
+      container.innerHTML = html;
+      
+      if (isScrolledToBottom) {
+        container.scrollTop = container.scrollHeight;
       }
     }
-  }
 
-  // Poll for new messages every 3 seconds
-  setInterval(fetchMessagesNow, 3000);
-</script>
+    /* ── Auto-refresh polling ── */
+    setInterval(function(){
+      // Do not auto-refresh if a menu is open or user is currently typing an edit
+      if (document.getElementById('actionOverlay').classList.contains('active')) return;
+      if (document.querySelector('.edit-input-wrap')) return;
 
+      fetch('/chat/messages')
+      .then(r=>r.json())
+      .then(data=>{
+        currentCanSend = data.canSend;
+        
+        const newHash = JSON.stringify(data.messages);
+        if (lastMessagesHash !== newHash) {
+          lastMessagesHash = newHash;
+          renderMessages(data.messages, data.isAdmin);
+        }
+      })
+      .catch(()=>{});
+    }, 2000);
+  </script>
 </body>
 </html>

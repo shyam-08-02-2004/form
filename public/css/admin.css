@@ -1,0 +1,131 @@
+/* Premium Dark Casino Admin Panel Styles */
+:root {
+  --color-bg: #0B0B0F;           /* Deep Black */
+  --color-surface: #111827;      /* Dark Navy */
+  --color-accent: #F4C542;       /* Premium Gold */
+  --color-text: #F8FAFC;          /* Soft White */
+  --color-secondary: #94A3B8;    /* Silver Gray */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: rgba(17, 24, 39, 0.85); /* dark navy with opacity */
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 1.5rem;
+  height: 4rem; /* 64px */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar .brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #F4C542, #ffeb99);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.navbar .nav-links a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  margin-left: 0.75rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  transition: all 0.25s ease;
+}
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+  color: var(--color-text);
+  background: rgba(244, 197, 66, 0.15);
+}
+
+/* ── Form Card ── */
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+.form-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 540px;
+}
+.form-card h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #F4C542, #ffeb99);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+.form-card input::placeholder,
+.form-card textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+.form-card input:focus,
+.form-card textarea:focus {
+  border-color: rgba(244,197,66,0.4);
+  box-shadow: 0 0 0 3px rgba(244,197,66,0.1);
+  background: rgba(255,255,255,0.08);
+  outline: none;
+}
+.form-card button {
+  width: 100%;
+  background: linear-gradient(135deg, #F4C542, #e6b800);
+  color: var(--color-bg);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.form-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(244,197,66,0.4);
+}
+.form-card button:active {
+  transform: scale(0.97);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .navbar { padding: 0 0.5rem; height: 3.5rem; }
+  .navbar .brand { font-size: 1rem; }
+  .navbar .nav-links a { margin-left: 0.4rem; padding: 0.3rem 0.6rem; font-size: 0.85rem; }
+  .form-wrapper { padding: 1.5rem 0.5rem; }
+  .form-card { padding: 1.5rem; }
+  .form-card h1 { font-size: 1.3rem; }
+}

@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Refer & Earn - VIP Casino</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       background: #0B0B0F;
       color: #fff;
@@ -14,134 +15,473 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
+
+    /* ── Animated background blobs ── */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::before {
+      width: 500px; height: 500px;
+      background: #F4C542;
+      top: -100px; right: -100px;
+      animation: float1 12s ease-in-out infinite;
+    }
+    body::after {
+      width: 400px; height: 400px;
+      background: #EAB308;
+      bottom: -50px; left: -80px;
+      animation: float2 15s ease-in-out infinite;
+    }
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-60px, 80px); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(50px, -70px); }
+    }
+
+    /* ── Navbar ── */
     .navbar {
       background: rgba(11, 11, 15, 0.85);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(255,255,255,0.05);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
       height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .brand { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #F4C542; }
-    .nav-links { display: flex; gap: 20px; }
-    .nav-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #F4C542;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-icon { font-size: 1.4rem; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      position: relative;
+    }
     .nav-links a:hover, .nav-links a.active { color: #fff; }
-    
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 0 20px;
-      width: 100%;
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0; right: 0;
+      height: 2px;
+      background: #F4C542;
+      border-radius: 2px;
     }
-    
+
+    /* ── Main Container ── */
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero Card ── */
     .card {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(244, 197, 66, 0.2);
-      border-radius: 24px;
-      padding: 40px;
+      border: 1px solid rgba(244, 197, 66, 0.15);
+      border-radius: 28px;
+      padding: 44px 36px 40px;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-shadow:
+        0 25px 60px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      animation: slideUp 0.6s ease-out;
     }
-    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     .icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 0 10px rgba(244, 197, 66, 0.3));
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: bounce 2s ease-in-out infinite;
     }
-    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
     .title {
       font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, #F4C542, #FDE047);
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #F4C542, #FDE047, #F4C542);
+      background-size: 200% 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: shimmer 3s ease infinite;
     }
-    
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .subtitle {
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 30px;
-      font-size: 1.05rem;
-      line-height: 1.5;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    
+
+    /* ── Section Labels ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .section-label span { font-size: 0.85rem; }
+
+    /* ── Link Box ── */
     .link-box {
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 16px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+      transition: border-color 0.3s;
     }
-    
+    .link-box:hover {
+      border-color: rgba(244, 197, 66, 0.3);
+    }
+
     .link-text {
       flex: 1;
-      font-family: monospace;
+      font-family: 'Inter', monospace;
       color: #F4C542;
-      font-size: 1rem;
+      font-size: 0.85rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       text-align: left;
+      user-select: all;
     }
-    
+
+    /* ── Copy Buttons ── */
     .btn-copy {
       background: linear-gradient(135deg, #F4C542, #EAB308);
       color: #0B0B0F;
       border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-weight: 700;
+      font-size: 0.8rem;
       font-family: 'Inter', sans-serif;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
     .btn-copy:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(244, 197, 66, 0.4);
+      box-shadow: 0 6px 20px rgba(244, 197, 66, 0.35);
+    }
+    .btn-copy:active {
+      transform: translateY(0);
+    }
+    .btn-copy.copied {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+
+    /* ── Referral Code Box ── */
+    .code-box {
+      background: rgba(0,0,0,0.45);
+      border: 1px dashed rgba(244, 197, 66, 0.35);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      transition: border-color 0.3s;
+    }
+    .code-box:hover {
+      border-color: rgba(244, 197, 66, 0.6);
+    }
+
+    .code-text {
+      flex: 1;
+      font-family: 'Outfit', sans-serif;
+      color: #FDE047;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-align: left;
+      user-select: all;
+    }
+
+    /* ── Share Buttons ── */
+    .share-section {
+      margin-bottom: 28px;
+    }
+    .share-btns {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-share {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn-share:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+    }
+    .btn-telegram {
+      background: linear-gradient(135deg, #0088cc, #0077b5);
+    }
+    .btn-share-more {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-share-more:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ── Rewards ── */
+    .rewards-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 0 0 24px;
     }
 
     .rewards {
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-      border-top: 1px dashed rgba(255,255,255,0.1);
-      padding-top: 30px;
+      gap: 16px;
+      margin-bottom: 28px;
     }
     .reward-item {
       flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 20px 12px;
+      transition: all 0.3s ease;
+    }
+    .reward-item:hover {
+      border-color: rgba(244, 197, 66, 0.2);
+      transform: translateY(-2px);
+    }
+    .reward-emoji {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
     }
     .reward-val {
       font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
+      font-size: 1.8rem;
       color: #F4C542;
       font-weight: 700;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
     .reward-desc {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.78rem;
+      font-weight: 500;
     }
 
+    /* ── Steps Section ── */
+    .steps {
+      text-align: left;
+    }
+    .steps-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: rgba(255,255,255,0.8);
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: linear-gradient(135deg, rgba(244, 197, 66, 0.15), rgba(244, 197, 66, 0.05));
+      border: 1px solid rgba(244, 197, 66, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #F4C542;
+    }
+    .step-text {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.5;
+      padding-top: 5px;
+    }
+    .step-text strong {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ── Toast Notification ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(34, 197, 94, 0.95);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Responsive ── */
     @media (max-width: 600px) {
-      .navbar { padding: 0 10px; }
-      .nav-links { gap: 10px; }
-      .nav-links a { font-size: 0.8rem; }
-      .link-box { flex-direction: column; }
-      .btn-copy { width: 100%; }
+      .navbar { padding: 0 14px; }
+      .nav-links { gap: 12px; }
+      .nav-links a { font-size: 0.78rem; }
+
+      .container { padding: 20px 14px 40px; }
+
+      .card {
+        padding: 32px 20px 32px;
+        border-radius: 22px;
+      }
+
+      .icon { font-size: 2.8rem; }
+      .title { font-size: 1.6rem; }
+      .subtitle { font-size: 0.88rem; margin-bottom: 22px; }
+
+      .link-box {
+        flex-direction: column;
+        padding: 14px;
+        gap: 10px;
+      }
+      .link-text {
+        width: 100%;
+        text-align: center;
+        font-size: 0.78rem;
+      }
+      .btn-copy {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+      }
+
+      .code-box {
+        flex-direction: column;
+        padding: 14px;
+        gap: 10px;
+      }
+      .code-text {
+        width: 100%;
+        text-align: center;
+        font-size: 1.15rem;
+      }
+
+      .share-btns {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .rewards { gap: 10px; }
+      .reward-item { padding: 16px 8px; }
+      .reward-val { font-size: 1.5rem; }
+      .reward-desc { font-size: 0.72rem; }
+    }
+
+    @media (max-width: 380px) {
+      .brand { font-size: 1.05rem; }
+      .nav-links a { font-size: 0.72rem; }
+      .nav-links { gap: 8px; }
+      .title { font-size: 1.4rem; }
+      .code-text { font-size: 1rem; letter-spacing: 2px; }
     }
   </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="brand">VIP Casino</div>
+  <div class="brand"><span class="brand-icon">🎰</span> VIP Casino</div>
   <div class="nav-links">
     <% if (user && user.username === 'admin') { %>
       <a href="/form">Dashboard</a>
@@ -156,45 +496,164 @@
   <div class="card">
     <div class="icon">🎁</div>
     <h1 class="title">Invite & Earn</h1>
-    <p class="subtitle">Share your unique VIP link with friends. When they sign up, they get a welcome bonus and you get rewarded too!</p>
-    
-    <% 
-      // Construct the URL dynamically 
-      // If we are on localhost, host is localhost:3000
-      let refUrl = "http://" + host + "/?ref=" + (user ? user.referralCode : ''); 
+    <p class="subtitle">Share your unique referral link or code with friends. When they sign up, you both earn bonus rewards!</p>
+
+    <%
+      let refUrl = 'https://' + host + '/?ref=' + (user ? user.referralCode : '');
+      let refCode = user ? user.referralCode : '';
     %>
 
-    <div class="link-box">
+    <!-- Referral Link -->
+    <div class="section-label"><span>🔗</span> Your Referral Link</div>
+    <div class="link-box" id="linkBox">
       <div class="link-text" id="refLink"><%= refUrl %></div>
-      <button class="btn-copy" onclick="copyLink()">Copy Link</button>
+      <button class="btn-copy" id="btnCopyLink" onclick="copyToClipboard('refLink', 'btnCopyLink', 'Link')">
+        📋 Copy Link
+      </button>
     </div>
 
+    <!-- Referral Code -->
+    <div class="section-label"><span>🏷️</span> Your Referral Code</div>
+    <div class="code-box" id="codeBox">
+      <div class="code-text" id="refCode"><%= refCode %></div>
+      <button class="btn-copy" id="btnCopyCode" onclick="copyToClipboard('refCode', 'btnCopyCode', 'Code')">
+        📋 Copy Code
+      </button>
+    </div>
+
+    <!-- Share Buttons -->
+    <div class="share-section">
+      <div class="section-label"><span>📤</span> Share Via</div>
+      <div class="share-btns">
+        <a class="btn-share btn-whatsapp" id="shareWhatsApp" href="#" onclick="shareWhatsApp(event)">
+          💬 WhatsApp
+        </a>
+        <a class="btn-share btn-telegram" id="shareTelegram" href="#" onclick="shareTelegram(event)">
+          ✈️ Telegram
+        </a>
+        <button class="btn-share btn-share-more" id="shareNative" onclick="shareNative()">
+          📱 More
+        </button>
+      </div>
+    </div>
+
+    <!-- Rewards -->
+    <hr class="rewards-divider">
     <div class="rewards">
       <div class="reward-item">
+        <div class="reward-emoji">🎉</div>
         <div class="reward-val">+150</div>
-        <div class="reward-desc">For Your Friend</div>
+        <div class="reward-desc">Friend Gets</div>
       </div>
       <div class="reward-item">
+        <div class="reward-emoji">💰</div>
         <div class="reward-val">+50</div>
-        <div class="reward-desc">For You</div>
+        <div class="reward-desc">You Earn</div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <hr class="rewards-divider">
+    <div class="steps">
+      <div class="steps-title">How it works</div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Share</strong> your referral link or code with friends</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Friend signs up</strong> using your link or enters your code</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Both earn rewards</strong> — your friend gets 150 & you get 50 bonus!</div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-  function copyLink() {
-    const linkText = document.getElementById('refLink').innerText;
-    navigator.clipboard.writeText(linkText).then(() => {
-      const btn = document.querySelector('.btn-copy');
-      const originalText = btn.innerText;
-      btn.innerText = 'Copied! ✅';
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerHTML = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function copyToClipboard(elementId, btnId, label) {
+    const text = document.getElementById(elementId).innerText;
+    const btn = document.getElementById(btnId);
+
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '✅ Copied!';
+      showToast('✅ ' + label + ' copied to clipboard!');
       setTimeout(() => {
-        btn.innerText = originalText;
-      }, 2000);
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
+        btn.classList.remove('copied');
+        btn.innerHTML = '📋 Copy ' + label;
+      }, 2500);
+    }).catch(() => {
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      btn.classList.add('copied');
+      btn.innerHTML = '✅ Copied!';
+      showToast('✅ ' + label + ' copied to clipboard!');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '📋 Copy ' + label;
+      }, 2500);
     });
+  }
+
+  function shareWhatsApp(e) {
+    e.preventDefault();
+    const refUrl = document.getElementById('refLink').innerText;
+    const refCode = document.getElementById('refCode').innerText;
+    const msg = encodeURIComponent(
+      '🎰 *VIP Casino* pe join karo aur *150 Bonus* paao! 🎁\n\n' +
+      '👉 Link: ' + refUrl + '\n\n' +
+      '🏷️ Referral Code: *' + refCode + '*\n\n' +
+      'Abhi signup karo aur bonus claim karo! 🚀'
+    );
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  }
+
+  function shareTelegram(e) {
+    e.preventDefault();
+    const refUrl = document.getElementById('refLink').innerText;
+    const refCode = document.getElementById('refCode').innerText;
+    const msg = encodeURIComponent(
+      '🎰 VIP Casino pe join karo aur 150 Bonus paao! 🎁\n\n' +
+      '👉 Link: ' + refUrl + '\n\n' +
+      '🏷️ Referral Code: ' + refCode + '\n\n' +
+      'Abhi signup karo! 🚀'
+    );
+    window.open('https://t.me/share/url?url=' + encodeURIComponent(refUrl) + '&text=' + msg, '_blank');
+  }
+
+  function shareNative() {
+    const refUrl = document.getElementById('refLink').innerText;
+    const refCode = document.getElementById('refCode').innerText;
+    if (navigator.share) {
+      navigator.share({
+        title: 'VIP Casino - Refer & Earn',
+        text: '🎰 VIP Casino pe join karo! Mera referral code use karo: ' + refCode + ' aur 150 Bonus paao!',
+        url: refUrl
+      }).catch(() => {});
+    } else {
+      copyToClipboard('refLink', 'btnCopyLink', 'Link');
+    }
   }
 </script>
 
