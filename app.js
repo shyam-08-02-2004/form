@@ -30,12 +30,15 @@ let usersDB = [];
 let studentsDB = [];
 
 // Middleware
+app.set('trust proxy', 1); // Trust Vercel proxy for secure cookies
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieSession({
     name: 'session',
     keys: ['secretkey'],
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: 'lax'
 }));
 
 // View Engine
@@ -166,7 +169,17 @@ app.get('/profile', async (req, res) => {
   }
 
   try {
-      const user = await User.findOne({ username: req.session.user });
+      let user = await User.findOne({ username: req.session.user });
+      if (!user) {
+          // Auto-recreate user if lost due to Vercel memory wipe
+          user = new User({
+              username: req.session.user,
+              password: 'password',
+              walletBalance: 0,
+              referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+          });
+          await user.save();
+      }
       res.render('profile', { user });
   } catch (err) {
       res.send("Error loading profile");
@@ -196,7 +209,17 @@ app.get('/refer-earn', async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ username: req.session.user });
+    let user = await User.findOne({ username: req.session.user });
+    if (!user) {
+        // Auto-recreate user if lost due to Vercel memory wipe
+        user = new User({
+            username: req.session.user,
+            password: 'password',
+            walletBalance: 0,
+            referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+        });
+        await user.save();
+    }
     res.render('refer-earn', { user, host: req.get('host') });
   } catch (err) {
     res.send("Error loading refer page");
