@@ -98,6 +98,50 @@
       .nav-links { gap: 10px; }
       .nav-links a { font-size: 0.8rem; }
     }
+
+    /* ── Copy Button & Toast ── */
+    .btn-copy {
+      background: linear-gradient(135deg, #F4C542, #EAB308);
+      color: #0B0B0F;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.2s ease;
+    }
+    .btn-copy:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 197, 66, 0.3);
+    }
+    .btn-copy.copied {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(34, 197, 94, 0.95);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -126,11 +170,58 @@
       </div>
       <div class="stat-box">
         <div class="stat-title">My Referral Code</div>
-        <div class="stat-value" style="font-size: 1.8rem; margin-top: 8px;"><%= user ? user.referralCode : 'N/A' %></div>
+        <div class="stat-value" style="font-size: 1.8rem; margin-top: 8px;" id="profileRefCode"><%= user ? user.referralCode : 'N/A' %></div>
+        <% if (user && user.referralCode) { %>
+          <button class="btn-copy" id="btnCopyProfileCode" onclick="copyProfileCode()">📋 Copy Code</button>
+        <% } %>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerHTML = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function copyProfileCode() {
+    const text = document.getElementById('profileRefCode').innerText;
+    const btn = document.getElementById('btnCopyProfileCode');
+
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '✅ Copied!';
+      showToast('✅ Referral Code copied!');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '📋 Copy Code';
+      }, 2500);
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      btn.classList.add('copied');
+      btn.innerHTML = '✅ Copied!';
+      showToast('✅ Referral Code copied!');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '📋 Copy Code';
+      }, 2500);
+    });
+  }
+</script>
 
 </body>
 </html>
